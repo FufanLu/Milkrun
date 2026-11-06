@@ -34,6 +34,17 @@ flowchart LR
   4,000 次重启，**0 次违反不变量**；注入的协议 bug 在 200/200 次运行里都被抓到（见[图解 01](docs/illustrated/01-offline-delivery.md)）。
 - **服务端定序。** 每次写入都锁住所在线路的行，所以每条线路的版本号是没有空洞的 pull 游标。
   同一套存储契约测试同时跑在内存实现和 PostgreSQL 17 上，混沌仿真也在 PostgreSQL 上跑：200 个种子，0 违反（见[图解 02](docs/illustrated/02-server-side.md)）。
+- **用打包间自己的记号画界面。** 牛皮纸上的模板喷印站号，半透明封箱胶带表示「等信号」，橙色异常贴纸
+  表示服务端的裁决；牛皮纸 / 夜间 / 强光三套配色，主要操作 56–64 dp，戴手套也能按。设计系统见
+  [design/DESIGN.md](design/DESIGN.md)，模拟器截图见[图解 03](docs/illustrated/03-android-stop.md)。
+
+<p>
+<img src="docs/illustrated/img/03/r4-offline.png" width="200" alt="离线路线">
+<img src="docs/illustrated/img/03/r3-font130-stop.png" width="200" alt="站点页">
+<img src="docs/illustrated/img/03/r3-done.png" width="200" alt="已完成">
+<img src="docs/illustrated/img/03/r3-night.png" width="200" alt="夜间">
+</p>
+
 - **工业级工程化。** Gradle convention plugins、version catalog、`explicitApi()`、警告即错误、ktlint，
   CI 分 Linux（JVM + Android）和 macOS（iOS 模拟器）两路。
 
@@ -45,7 +56,9 @@ flowchart LR
 | `shared/` | Kotlin Multiplatform 模块（Android、iOS、JVM 三个 target） |
 | `server/core` | 权威同步服务（push/pull/调度），基于存储接口 |
 | `server/app` | Ktor 服务：JWT、push/pull、调度与路线规划、PostgreSQL（Flyway、JDBC）、指标、Dockerfile |
-| `android/` | Compose App |
+| `android/app` | Compose App：Material 3 主题化为打包间风格、WorkManager 后台同步、Roborazzi 截图黄金图 |
+| `shared/presentation` | 两个 App 共用的页面状态和司机文案 |
+| `design/` | DESIGN.md、模板字体（OFL） |
 | `ios/` | SwiftUI App（XcodeGen） |
 | `tools/simulation` | 确定性同步仿真器，以及为图解文档生成数据的 trace |
 | `docs/illustrated/` | 跟着一个包裹走完整个系统（图解，真实数据） |
@@ -58,8 +71,8 @@ flowchart LR
 | M0 | 骨架、工具链、CI、ADR | 完成 |
 | M1 | 共享核心：模型、状态机、HLC、SQLDelight、同步引擎、仿真测试 | 完成 |
 | M2 | 服务端：鉴权、push/pull、Postgres、调度、路线优化 | 完成 |
-| M3 | Android App | 下一步 |
-| M4 | iOS App | |
+| M3 | Android App | 完成 |
+| M4 | iOS App | 下一步 |
 | M5 | 签收照片上传、定位、地理围栏 | |
 | M6 | 可观测性与安全 | |
 | M7 | 压测与混沌测试 | |

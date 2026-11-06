@@ -1,0 +1,1034 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-06T12:45:57+00:00",
+  "title": "Design System: Milkrun",
+  "extensions": {
+    "colorMeta": {
+      "kraft-ground": {
+        "role": "neutral",
+        "displayName": "Corrugated Kraft (Kraft)",
+        "canonical": "#C9A57A",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#100A04",
+          "#2E2316",
+          "#503E2A",
+          "#755C3F",
+          "#9C7C55",
+          "#BF9F79",
+          "#DEC4A6",
+          "#FFEBD4"
+        ]
+      },
+      "kraft-fluting": {
+        "role": "neutral",
+        "displayName": "Fluting (Kraft)",
+        "canonical": "#B08A5E",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#100A04",
+          "#2E2315",
+          "#513E28",
+          "#765C3D",
+          "#9E7B53",
+          "#C19E77",
+          "#E0C4A4",
+          "#FFEBD3"
+        ]
+      },
+      "kraft-ink": {
+        "role": "primary",
+        "displayName": "Stencil Ink (Kraft)",
+        "canonical": "#1B1610",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#272522",
+          "#45413D",
+          "#65605B",
+          "#87817A",
+          "#AAA49D",
+          "#CDC8C2",
+          "#F2EEE9"
+        ]
+      },
+      "kraft-ink-2": {
+        "role": "neutral",
+        "displayName": "Secondary Ink (Kraft)",
+        "canonical": "#3E3020",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0D0B08",
+          "#29241E",
+          "#494037",
+          "#6B5F52",
+          "#8F7F6F",
+          "#B1A292",
+          "#D3C7B9",
+          "#F6EDE2"
+        ]
+      },
+      "kraft-label": {
+        "role": "neutral",
+        "displayName": "Label Stock (Kraft)",
+        "canonical": "#F8F4EA",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262522",
+          "#44423D",
+          "#64615B",
+          "#85827A",
+          "#A8A59D",
+          "#CCC9C2",
+          "#F0EEE9"
+        ]
+      },
+      "kraft-label-ink": {
+        "role": "neutral",
+        "displayName": "Label Ink (Kraft)",
+        "canonical": "#15110C",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#262523",
+          "#44413E",
+          "#64605C",
+          "#86817B",
+          "#A9A49E",
+          "#CCC8C3",
+          "#F1EEEA"
+        ]
+      },
+      "kraft-label-ink-2": {
+        "role": "neutral",
+        "displayName": "Secondary Label Ink (Kraft)",
+        "canonical": "#5A4A36",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0E0B07",
+          "#29241D",
+          "#494036",
+          "#6B5F50",
+          "#907F6B",
+          "#B2A28E",
+          "#D4C7B7",
+          "#F7EDE0"
+        ]
+      },
+      "kraft-tape": {
+        "role": "secondary",
+        "displayName": "Packing Tape Amber (Kraft)",
+        "canonical": "#E9B949",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#120A00",
+          "#312301",
+          "#553E00",
+          "#7C5B00",
+          "#A57B00",
+          "#C89F3F",
+          "#E6C57E",
+          "#FFECB8"
+        ]
+      },
+      "kraft-on-tape": {
+        "role": "secondary",
+        "displayName": "Ink on Tape (Kraft)",
+        "canonical": "#1B1610",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#272522",
+          "#45413D",
+          "#65605B",
+          "#87817A",
+          "#AAA49D",
+          "#CDC8C2",
+          "#F2EEE9"
+        ]
+      },
+      "kraft-sticker": {
+        "role": "tertiary",
+        "displayName": "Safety Orange (Kraft)",
+        "canonical": "#FF6B1A",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#1B0300",
+          "#421501",
+          "#702800",
+          "#A23C00",
+          "#D75100",
+          "#FC7A3E",
+          "#FFAA7D",
+          "#FFD9B7"
+        ]
+      },
+      "kraft-on-sticker": {
+        "role": "tertiary",
+        "displayName": "Ink on Sticker (Kraft)",
+        "canonical": "#1B1610",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#272522",
+          "#45413D",
+          "#65605B",
+          "#87817A",
+          "#AAA49D",
+          "#CDC8C2",
+          "#F2EEE9"
+        ]
+      },
+      "kraft-sticker-edge": {
+        "role": "tertiary",
+        "displayName": "Die-cut Edge (Kraft)",
+        "canonical": "#F8F4EA",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262522",
+          "#44423D",
+          "#64615B",
+          "#85827A",
+          "#A8A59D",
+          "#CCC9C2",
+          "#F0EEE9"
+        ]
+      },
+      "kraft-primary": {
+        "role": "primary",
+        "displayName": "Block Fill (Kraft)",
+        "canonical": "#1B1610",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#272522",
+          "#45413D",
+          "#65605B",
+          "#87817A",
+          "#AAA49D",
+          "#CDC8C2",
+          "#F2EEE9"
+        ]
+      },
+      "kraft-on-primary": {
+        "role": "primary",
+        "displayName": "Block Text (Kraft)",
+        "canonical": "#F8F4EA",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262522",
+          "#44423D",
+          "#64615B",
+          "#85827A",
+          "#A8A59D",
+          "#CCC9C2",
+          "#F0EEE9"
+        ]
+      },
+      "kraft-done-number": {
+        "role": "neutral",
+        "displayName": "Faded Stencil (Kraft)",
+        "canonical": "#5E4934",
+        "scheme": "kraft",
+        "tonalRamp": [
+          "#0E0A07",
+          "#2B241D",
+          "#4B4034",
+          "#6E5E4E",
+          "#937E69",
+          "#B6A18C",
+          "#D7C6B5",
+          "#F9ECDF"
+        ]
+      },
+      "night-ground": {
+        "role": "neutral",
+        "displayName": "Corrugated Kraft (Night)",
+        "canonical": "#211912",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0D0B09",
+          "#282422",
+          "#46413C",
+          "#676059",
+          "#8A8078",
+          "#ADA39B",
+          "#CFC7C1",
+          "#F3EDE8"
+        ]
+      },
+      "night-fluting": {
+        "role": "neutral",
+        "displayName": "Fluting (Night)",
+        "canonical": "#3A2D20",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0D0B08",
+          "#29241F",
+          "#484039",
+          "#6A5F54",
+          "#8E7F72",
+          "#B1A294",
+          "#D3C7BC",
+          "#F6EDE4"
+        ]
+      },
+      "night-ink": {
+        "role": "primary",
+        "displayName": "Stencil Ink (Night)",
+        "canonical": "#EEDDC3",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0D0B07",
+          "#29241D",
+          "#494135",
+          "#6A604F",
+          "#8E806A",
+          "#B1A38D",
+          "#D3C7B6",
+          "#F6EDE0"
+        ]
+      },
+      "night-ink-2": {
+        "role": "neutral",
+        "displayName": "Secondary Ink (Night)",
+        "canonical": "#C2AC8C",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0E0A06",
+          "#2A241A",
+          "#4B4031",
+          "#6E5F49",
+          "#937F63",
+          "#B5A286",
+          "#D7C7B0",
+          "#F9EDDB"
+        ]
+      },
+      "night-label": {
+        "role": "neutral",
+        "displayName": "Label Stock (Night)",
+        "canonical": "#33281D",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0D0B08",
+          "#282420",
+          "#47413A",
+          "#695F56",
+          "#8C8074",
+          "#AFA397",
+          "#D1C7BD",
+          "#F5EDE5"
+        ]
+      },
+      "night-label-ink": {
+        "role": "neutral",
+        "displayName": "Label Ink (Night)",
+        "canonical": "#F6E9D4",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0D0B08",
+          "#28241F",
+          "#474138",
+          "#686053",
+          "#8C816F",
+          "#AEA492",
+          "#D1C8BA",
+          "#F4EEE3"
+        ]
+      },
+      "night-label-ink-2": {
+        "role": "neutral",
+        "displayName": "Secondary Label Ink (Night)",
+        "canonical": "#CDB89A",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0E0B06",
+          "#2A241B",
+          "#4A4032",
+          "#6D5F4B",
+          "#927F65",
+          "#B4A288",
+          "#D6C7B2",
+          "#F8EDDD"
+        ]
+      },
+      "night-tape": {
+        "role": "secondary",
+        "displayName": "Packing Tape Amber (Night)",
+        "canonical": "#D9A63C",
+        "scheme": "night",
+        "tonalRamp": [
+          "#120900",
+          "#312203",
+          "#563D04",
+          "#7D5B05",
+          "#A77A04",
+          "#CA9D44",
+          "#E8C481",
+          "#FFEBBA"
+        ]
+      },
+      "night-on-tape": {
+        "role": "secondary",
+        "displayName": "Ink on Tape (Night)",
+        "canonical": "#1B1610",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#272522",
+          "#45413D",
+          "#65605B",
+          "#87817A",
+          "#AAA49D",
+          "#CDC8C2",
+          "#F2EEE9"
+        ]
+      },
+      "night-sticker": {
+        "role": "tertiary",
+        "displayName": "Safety Orange (Night)",
+        "canonical": "#FF7A2E",
+        "scheme": "night",
+        "tonalRamp": [
+          "#1A0400",
+          "#3F1802",
+          "#6C2C03",
+          "#9D4203",
+          "#D05901",
+          "#F58043",
+          "#FFAE80",
+          "#FFDBB9"
+        ]
+      },
+      "night-on-sticker": {
+        "role": "tertiary",
+        "displayName": "Ink on Sticker (Night)",
+        "canonical": "#1B1610",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#272522",
+          "#45413D",
+          "#65605B",
+          "#87817A",
+          "#AAA49D",
+          "#CDC8C2",
+          "#F2EEE9"
+        ]
+      },
+      "night-sticker-edge": {
+        "role": "tertiary",
+        "displayName": "Die-cut Edge (Night)",
+        "canonical": "#E9DCC6",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0D0B07",
+          "#28251E",
+          "#474137",
+          "#686052",
+          "#8C816E",
+          "#AEA491",
+          "#D1C8B9",
+          "#F4EEE2"
+        ]
+      },
+      "night-primary": {
+        "role": "primary",
+        "displayName": "Block Fill (Night)",
+        "canonical": "#EEDDC3",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0D0B07",
+          "#29241D",
+          "#494135",
+          "#6A604F",
+          "#8E806A",
+          "#B1A38D",
+          "#D3C7B6",
+          "#F6EDE0"
+        ]
+      },
+      "night-on-primary": {
+        "role": "primary",
+        "displayName": "Block Text (Night)",
+        "canonical": "#1B1610",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#272522",
+          "#45413D",
+          "#65605B",
+          "#87817A",
+          "#AAA49D",
+          "#CDC8C2",
+          "#F2EEE9"
+        ]
+      },
+      "night-done-number": {
+        "role": "neutral",
+        "displayName": "Faded Stencil (Night)",
+        "canonical": "#8C7559",
+        "scheme": "night",
+        "tonalRamp": [
+          "#0E0A06",
+          "#2B241B",
+          "#4B4032",
+          "#6F5E4A",
+          "#947E64",
+          "#B7A187",
+          "#D8C6B1",
+          "#FAECDC"
+        ]
+      },
+      "sun-ground": {
+        "role": "neutral",
+        "displayName": "Corrugated Kraft (Sun)",
+        "canonical": "#FFFFFF",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-fluting": {
+        "role": "neutral",
+        "displayName": "Fluting (Sun)",
+        "canonical": "#C9A57A",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#100A04",
+          "#2E2316",
+          "#503E2A",
+          "#755C3F",
+          "#9C7C55",
+          "#BF9F79",
+          "#DEC4A6",
+          "#FFEBD4"
+        ]
+      },
+      "sun-ink": {
+        "role": "primary",
+        "displayName": "Stencil Ink (Sun)",
+        "canonical": "#000000",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-ink-2": {
+        "role": "neutral",
+        "displayName": "Secondary Ink (Sun)",
+        "canonical": "#2B2B2B",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-label": {
+        "role": "neutral",
+        "displayName": "Label Stock (Sun)",
+        "canonical": "#FFFFFF",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-label-ink": {
+        "role": "neutral",
+        "displayName": "Label Ink (Sun)",
+        "canonical": "#000000",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-label-ink-2": {
+        "role": "neutral",
+        "displayName": "Secondary Label Ink (Sun)",
+        "canonical": "#333333",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-label-edge": {
+        "role": "neutral",
+        "displayName": "Label Edge (Sun)",
+        "canonical": "#000000",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-tape": {
+        "role": "secondary",
+        "displayName": "Packing Tape Amber (Sun)",
+        "canonical": "#FFC400",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#130900",
+          "#332200",
+          "#593D00",
+          "#815A00",
+          "#AC7800",
+          "#CF9D00",
+          "#ECC465",
+          "#FFEBA8"
+        ]
+      },
+      "sun-on-tape": {
+        "role": "secondary",
+        "displayName": "Ink on Tape (Sun)",
+        "canonical": "#000000",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-sticker": {
+        "role": "tertiary",
+        "displayName": "Safety Orange (Sun)",
+        "canonical": "#FF5A00",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#1C0200",
+          "#441201",
+          "#742300",
+          "#A73500",
+          "#DE4800",
+          "#FF723B",
+          "#FFA57C",
+          "#FFD5B6"
+        ]
+      },
+      "sun-on-sticker": {
+        "role": "tertiary",
+        "displayName": "Ink on Sticker (Sun)",
+        "canonical": "#000000",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-sticker-edge": {
+        "role": "tertiary",
+        "displayName": "Die-cut Edge (Sun)",
+        "canonical": "#000000",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-primary": {
+        "role": "primary",
+        "displayName": "Block Fill (Sun)",
+        "canonical": "#000000",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-on-primary": {
+        "role": "primary",
+        "displayName": "Block Text (Sun)",
+        "canonical": "#FFFFFF",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "sun-done-number": {
+        "role": "neutral",
+        "displayName": "Faded Stencil (Sun)",
+        "canonical": "#555555",
+        "scheme": "sun",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "stencil-hero": {
+        "displayName": "Stencil Hero",
+        "purpose": "The next stop's number; the stop screen's title."
+      },
+      "stencil-count": {
+        "displayName": "Stencil Count",
+        "purpose": "The remaining count in the route header."
+      },
+      "stencil-row": {
+        "displayName": "Stencil Row",
+        "purpose": "Upcoming stop numbers, in secondary ink."
+      },
+      "stencil-done": {
+        "displayName": "Stencil Done",
+        "purpose": "Finished stop numbers, in faded stencil."
+      },
+      "title-large": {
+        "displayName": "Title Large",
+        "purpose": "Addresses on the label and stop screen; \"left\"; sheet and finished titles."
+      },
+      "title-medium": {
+        "displayName": "Title Medium",
+        "purpose": "Bottom sheet question."
+      },
+      "title-small": {
+        "displayName": "Title Small",
+        "purpose": "Section headings, tape strip title, sticker title."
+      },
+      "body-large": {
+        "displayName": "Body Large",
+        "purpose": "Row addresses, status on labels, parcel descriptions."
+      },
+      "body-medium": {
+        "displayName": "Body Medium",
+        "purpose": "Secondary lines and sticker body; the reading floor."
+      },
+      "label-large": {
+        "displayName": "Label Large",
+        "purpose": "Button and handoff labels (Bold on block and selected)."
+      },
+      "label-medium": {
+        "displayName": "Label Medium",
+        "purpose": "Route id, tape detail, \"All sent\", tape tab and sticker tag (Bold)."
+      },
+      "barcode": {
+        "displayName": "Barcode",
+        "purpose": "Full parcel label ids, platform monospace."
+      }
+    },
+    "platformMapping": {
+      "units": "Token px = dp on Android, pt on iOS. Type sizes = sp (Android font scale) / pt scaled with Dynamic Type via Font.custom(relativeTo:) and @ScaledMetric. Hold 1.3x without clipping.",
+      "schemes": "Android: MilkrunTheme(scheme) -> Kraft (light) / Night (isSystemInDarkTheme) / Sun (header toggle), exposed via LocalMilkrunColors and mapped onto Material 3 roles. iOS: an Environment value carrying the same role set; Kraft/Night follow colorScheme, Sun is the same app toggle.",
+      "font": "Bundle design/fonts/BigShouldersStencilDisplay.ttf (OFL). Android res/font/big_shoulders_stencil with FontVariation weight 700/800. iOS: UIAppFonts in Info.plist; select weight via variation axis 700/800.",
+      "reduceMotion": "Android: animator duration scale 0. iOS: @Environment(\\.accessibilityReduceMotion).",
+      "icons": "Material icons (WbSunny, ArrowBack, QrCodeScanner, Check) on Android; SF Symbols (sun.max / sun.max.fill, chevron.backward, qrcode.viewfinder, checkmark) on iOS.",
+      "sheet": "Android ModalBottomSheet, label container, 0 corner. iOS .sheet with presentationCornerRadius(0) and label background."
+    },
+    "shadows": [
+      {
+        "name": "label-lift",
+        "value": "0 1px 2px rgba(0,0,0,0.18)",
+        "purpose": "Next-stop label and route-done label (Android shadowElevation 2dp)."
+      },
+      {
+        "name": "sheet-lift",
+        "value": "0 0.5px 1px rgba(0,0,0,0.16)",
+        "purpose": "Parcel sheet (Android shadowElevation 1dp)."
+      },
+      {
+        "name": "dock-lift",
+        "value": "0 -2px 6px rgba(0,0,0,0.22)",
+        "purpose": "Action dock pinned at the bottom (Android shadowElevation 6dp)."
+      },
+      {
+        "name": "sun-label-edge",
+        "value": "inset 0 0 0 2px #000000",
+        "purpose": "Sun only: 2 ink outline on label stock where label and ground are both white."
+      }
+    ],
+    "motion": [
+      {
+        "name": "tape-on",
+        "value": "slide in from trailing edge 200ms + fade in 120ms",
+        "purpose": "Tape tab laid on when a change is recorded."
+      },
+      {
+        "name": "tape-off",
+        "value": "slide toward leading edge by half width 180ms + fade out 180ms",
+        "purpose": "Tape tab peels off when the server confirms."
+      },
+      {
+        "name": "sticker-slap",
+        "value": "scale 1.06 -> 1, 150ms, at -1.2deg tilt",
+        "purpose": "Exception sticker lands."
+      },
+      {
+        "name": "reduced",
+        "value": "crossfade 150ms (tape); sticker and tag appear flat with no scale or tilt",
+        "purpose": "Reduce Motion replacement for all three."
+      },
+      {
+        "name": "list",
+        "value": "platform item placement animation (Compose animateItem; SwiftUI default list transitions)",
+        "purpose": "Rows and stickers moving between sections."
+      }
+    ],
+    "geometry": [
+      {
+        "name": "tape-alpha",
+        "value": "0.78",
+        "purpose": "Tape opacity over its ground."
+      },
+      {
+        "name": "tape-grain",
+        "value": "1.5px lines of on-tape at 10% every 9px (device pixels in the Android build)",
+        "purpose": "Packing-tape texture."
+      },
+      {
+        "name": "torn-ends",
+        "value": "six teeth per end, 5px depth (device pixels in the Android build)",
+        "purpose": "Tape dispenser tear."
+      },
+      {
+        "name": "stencil-mark",
+        "value": "stroke 16% of size, butt caps, 7% bridge gaps",
+        "purpose": "Check and cross for finished rows."
+      },
+      {
+        "name": "marker-strike",
+        "value": "6 wide, round caps, from 62% to 38% of height",
+        "purpose": "Cancelled by dispatch."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Block Button",
+      "kind": "button",
+      "refersTo": "block-button",
+      "description": "The screen's one ink-filled primary action; full width, 64 tall, square.",
+      "html": "<button class=\"ds-block\">Deliver 2 parcels</button>",
+      "css": ".ds-block { display:block; width:100%; height:64px; background:#1B1610; color:#F8F4EA; border:none; border-radius:0; font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:17px; line-height:22px; font-weight:700; } .ds-block:active { background:#3E3020; } .ds-block:focus-visible { outline:3px solid #E9B949; outline-offset:2px; } .ds-block:disabled { background:#B08A5E; color:#3E3020; }"
+    },
+    {
+      "name": "Outline Block Button",
+      "kind": "button",
+      "refersTo": "outline-block-button",
+      "description": "Reversible actions and failure reasons: 56 tall, 2 ink outline, no fill.",
+      "html": "<button class=\"ds-outline\">Can't deliver</button>",
+      "css": ".ds-outline { height:56px; padding:0 24px; background:transparent; color:#1B1610; border:2px solid #1B1610; border-radius:0; font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:17px; line-height:22px; font-weight:600; } .ds-outline:active { background:rgba(27,22,16,0.08); } .ds-outline:focus-visible { outline:3px solid #E9B949; outline-offset:2px; } .ds-outline:disabled { border-color:#B08A5E; color:#3E3020; }"
+    },
+    {
+      "name": "Next Stop Label",
+      "kind": "card",
+      "refersTo": "next-stop-label",
+      "description": "The one lifted label on the kraft: hero stencil number, address, status, block button at its foot.",
+      "html": "<div class=\"ds-kraft\"><div class=\"ds-label\"><div class=\"ds-label-row\"><span class=\"ds-hero\">08</span><div><div class=\"ds-addr\">410 Terry Ave N</div><div class=\"ds-status\">2 parcels</div></div></div><button class=\"ds-label-block\">Arrived</button><span class=\"ds-tab\">Unsent</span></div></div>",
+      "css": ".ds-kraft { background:#C9A57A; padding:16px; } .ds-label { position:relative; background:#F8F4EA; box-shadow:0 1px 2px rgba(0,0,0,0.18); } .ds-label-row { display:flex; gap:16px; padding:16px; align-items:flex-start; } .ds-hero { font-family: 'Big Shoulders Stencil Display', 'Arial Narrow', sans-serif; font-size:96px; line-height:84px; font-weight:800; color:#15110C; } .ds-addr { font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:22px; line-height:28px; font-weight:600; color:#15110C; margin-top:8px; } .ds-status { font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:17px; line-height:24px; color:#5A4A36; margin-top:4px; } .ds-label-block { display:block; width:100%; height:64px; background:#1B1610; color:#F8F4EA; border:none; font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:17px; font-weight:700; } .ds-label-block:focus-visible { outline:3px solid #E9B949; } .ds-tab { position:absolute; top:-12px; right:-6px; transform:rotate(-4deg); padding:4px 12px; background-image: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(27,22,16,0.10) 3px 3.5px); background-color: rgba(233,185,73,0.78); clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 16.6%, calc(100% - 5px) 33.3%, 100% 50%, calc(100% - 5px) 66.6%, 100% 83.3%, calc(100% - 5px) 100%, 5px 100%, 0 83.3%, 5px 66.6%, 0 50%, 5px 33.3%, 0 16.6%); font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:13px; line-height:18px; font-weight:700; letter-spacing:0.4px; color:#1B1610; }"
+    },
+    {
+      "name": "Stop Rows",
+      "kind": "custom",
+      "refersTo": "stop-row",
+      "description": "Upcoming kraft row, a cancelled row with marker strike, and a finished row receding with a stencil check.",
+      "html": "<div class=\"ds-rows\"><div class=\"ds-row\"><span class=\"ds-num\">09</span><div><div class=\"ds-raddr\">500 Fairview Ave N</div><div class=\"ds-rstat\">1 parcel</div></div></div><div class=\"ds-row\"><span class=\"ds-num ds-struck\">04</span><div><div class=\"ds-raddr\">1200 Westlake Ave N</div><div class=\"ds-rstat\">Cancelled by dispatch</div></div></div><div class=\"ds-row ds-done\"><span class=\"ds-num\">01</span><div style=\"flex:1\"><div class=\"ds-raddr\">2101 4th Ave</div><div class=\"ds-rstat\">Delivered · front door</div></div><svg width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" aria-label=\"Delivered\"><path d=\"M3.4 14.6 L8.1 19.3 M11.2 20.7 L25.2 5.6\" stroke=\"#5E4934\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"butt\"/></svg></div></div>",
+      "css": ".ds-rows { background:#C9A57A; } .ds-row { display:flex; gap:12px; align-items:flex-start; min-height:72px; padding:12px 16px; border-bottom:1px solid #B08A5E; box-sizing:border-box; cursor:pointer; } .ds-row:active { background:rgba(27,22,16,0.06); } .ds-row:focus-visible { outline:3px solid #1B1610; outline-offset:-3px; } .ds-num { position:relative; width:56px; flex:none; font-family: 'Big Shoulders Stencil Display', 'Arial Narrow', sans-serif; font-size:40px; line-height:40px; font-weight:700; color:#3E3020; } .ds-struck::after { content:''; position:absolute; left:0; top:45%; width:36px; height:6px; border-radius:3px; background:#1B1610; transform:rotate(-20deg); } .ds-raddr { font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:17px; line-height:24px; color:#1B1610; } .ds-rstat { font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:15px; line-height:21px; color:#3E3020; } .ds-done { min-height:56px; padding:8px 16px; } .ds-done .ds-num { font-size:28px; line-height:30px; color:#5E4934; } .ds-done .ds-raddr { font-size:15px; line-height:21px; color:#3E3020; }"
+    },
+    {
+      "name": "Tape Strip",
+      "kind": "custom",
+      "refersTo": "tape-strip",
+      "description": "Unconfirmed work at route level: translucent torn tape over the box seam. Calm, never an error.",
+      "html": "<div class=\"ds-strip\"><div class=\"ds-seam\"></div><div class=\"ds-tape\"><span class=\"ds-tt\">2 waiting for signal</span><span class=\"ds-td\">Retrying</span></div></div>",
+      "css": ".ds-strip { position:relative; background:#C9A57A; min-height:48px; } .ds-seam { position:absolute; left:0; right:0; bottom:10px; height:2px; background:#3E3020; } .ds-tape { position:relative; margin:0 16px; min-height:48px; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; box-sizing:border-box; background-image: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(27,22,16,0.10) 3px 3.5px); background-color: rgba(233,185,73,0.78); clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 16.6%, calc(100% - 5px) 33.3%, 100% 50%, calc(100% - 5px) 66.6%, 100% 83.3%, calc(100% - 5px) 100%, 5px 100%, 0 83.3%, 5px 66.6%, 0 50%, 5px 33.3%, 0 16.6%); } .ds-tt { font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:16px; line-height:22px; font-weight:600; color:#1B1610; } .ds-td { font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:13px; line-height:18px; font-weight:500; letter-spacing:0.4px; color:#1B1610; }"
+    },
+    {
+      "name": "Exception Sticker",
+      "kind": "custom",
+      "refersTo": "exception-sticker",
+      "description": "A server ruling: safety orange, die-cut, hazard mark, plain sentence, stays until acknowledged.",
+      "html": "<div class=\"ds-kraft2\"><div class=\"ds-sticker\" role=\"alert\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 22 22\" aria-label=\"Exception\"><path d=\"M11 0 L22 11 L11 22 L0 11 Z\" fill=\"#1B1610\"/><rect x=\"9.8\" y=\"5.3\" width=\"2.4\" height=\"7\" fill=\"#FF6B1A\"/><rect x=\"9.8\" y=\"14.1\" width=\"2.4\" height=\"2.4\" fill=\"#FF6B1A\"/></svg><div><div class=\"ds-st\">Stop 04 was cancelled by dispatch</div><div class=\"ds-sb\">Keep its parcels on the van and bring them back to the station.</div><div class=\"ds-sa\"><button class=\"ds-got\">Got it</button></div></div></div></div>",
+      "css": ".ds-kraft2 { background:#C9A57A; padding:16px; } .ds-sticker { display:flex; gap:12px; align-items:flex-start; margin:0 8px; padding:12px 8px 0 12px; background:#FF6B1A; border:2px solid #F8F4EA; border-radius:6px; transform:rotate(-1.2deg); animation:ds-slap 150ms ease-out; } @keyframes ds-slap { from { transform:rotate(-1.2deg) scale(1.06); } } @media (prefers-reduced-motion: reduce) { .ds-sticker { transform:none; animation:none; } } .ds-st { font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:16px; line-height:22px; font-weight:600; color:#1B1610; } .ds-sb { font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:15px; line-height:21px; color:#1B1610; margin-top:4px; padding-right:8px; } .ds-sa { display:flex; justify-content:flex-end; } .ds-got { min-height:48px; padding:0 12px; background:none; border:none; font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:17px; font-weight:600; color:#1B1610; } .ds-got:focus-visible { outline:3px solid #1B1610; }"
+    },
+    {
+      "name": "Sticker Tag",
+      "kind": "chip",
+      "refersTo": "sticker-tag",
+      "description": "One-line, actionless sticker on a row.",
+      "html": "<span class=\"ds-tag\">Delivered after cancel · dispatch notified</span>",
+      "css": ".ds-tag { display:inline-block; padding:4px 8px; background:#FF6B1A; border:1.5px solid #F8F4EA; border-radius:4px; transform:rotate(-1.5deg); font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:13px; line-height:18px; font-weight:700; letter-spacing:0.4px; color:#1B1610; } @media (prefers-reduced-motion: reduce) { .ds-tag { transform:none; } }"
+    },
+    {
+      "name": "Handoff Grid",
+      "kind": "chip",
+      "refersTo": "handoff-block",
+      "description": "Where the parcels were left: 2 x 2 label-stock blocks; selection is a heavier frame plus a check, never a fill.",
+      "html": "<div class=\"ds-grid\" role=\"radiogroup\"><button class=\"ds-h\" role=\"radio\" aria-checked=\"false\">In person</button><button class=\"ds-h ds-on\" role=\"radio\" aria-checked=\"true\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\"><path d=\"M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z\" fill=\"#15110C\"/></svg>Door</button><button class=\"ds-h\" role=\"radio\" aria-checked=\"false\">Mailroom</button><button class=\"ds-h\" role=\"radio\" aria-checked=\"false\">Locker</button></div>",
+      "css": ".ds-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; background:#F8F4EA; } .ds-h { display:flex; align-items:center; justify-content:center; gap:8px; min-height:56px; padding:0 12px; background:#F8F4EA; color:#15110C; border:1.5px solid #5A4A36; border-radius:0; font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:17px; line-height:22px; font-weight:500; } .ds-h:focus-visible { outline:3px solid #E9B949; outline-offset:2px; } .ds-on { border:4px solid #15110C; font-weight:700; }"
+    },
+    {
+      "name": "Note Field",
+      "kind": "input",
+      "refersTo": "note-field",
+      "description": "Square outlined field on label stock; outline shifts to ink on focus.",
+      "html": "<label class=\"ds-field\"><span>Note for this address</span><input placeholder=\"Gate code, where you left it\"></label>",
+      "css": ".ds-field { display:block; background:#C9A57A; padding:16px; } .ds-field span { display:block; font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:13px; line-height:18px; color:#3E3020; margin-bottom:4px; } .ds-field input { width:100%; box-sizing:border-box; height:56px; padding:0 16px; background:#F8F4EA; color:#15110C; border:1px solid #3E3020; border-radius:0; font-family: system-ui, Roboto, -apple-system, sans-serif; font-size:17px; } .ds-field input::placeholder { color:#5A4A36; } .ds-field input:focus { outline:none; border:2px solid #1B1610; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Packing Room",
+    "overview": "A route is a stack of boxes to move, so every screen speaks the marks a packing room already uses: corrugated kraft as the ground, near-black stencil ink, label-white stock for the thing in hand, translucent amber packing tape for work the server has not confirmed, safety-orange exception stickers for the server's rulings, and a thick marker strike for a stop dispatch cancelled. Nothing is decorative; each material carries exactly one meaning, and each state has its own physical mark so nothing depends on color alone.\n\nThe system is built for a driver mid-shift: one hand busy, sometimes gloved, in direct sun or a dark garage. That sets the density. Type never drops below 15 (body) on arm's-length surfaces, actions are 56 to 64 tall, and the screen has one thing at full strength (the next stop, or on a stop the Deliver block) while everything else recedes by size and ink. The world deliberately refuses the category default of white list cells with colored status chips.\n\nOne world, three schemes. **Kraft** is the day scheme, **Night** the dark scheme for garages and dusk (follows the system dark setting), **Sun** a black-on-white maximum-contrast scheme the driver toggles from the route header for direct sunlight. Platform structure stays native (Material 3 on Android, HIG on iOS); the world is applied through each platform's open theming layer.\n\n**Units.** Token dimensions are written as `px` for tooling. Read 1px as 1dp on Android and 1pt on iOS. Type sizes are sp on Android and scale with font scale; on iOS they map to points and must scale with Dynamic Type (use `Font.custom(_:size:relativeTo:)` and `@ScaledMetric`). Both platforms must hold 1.3x without clipping.",
+    "keyCharacteristics": [
+      "Kraft ground, stencil ink, label stock; materials, not cards.",
+      "Stencil numerals are the headline of every stop; everything else is the platform sans.",
+      "Square corners everywhere except die-cut stickers.",
+      "Tape means waiting, orange means a ruling, a marker strike means cancelled; each also carries words or a mark.",
+      "One lifted label per route view; the rest recedes.",
+      "One ink-filled block per screen, isolated from reversible actions."
+    ],
+    "rules": [
+      {
+        "name": "The Tape Is Waiting Rule",
+        "body": "Amber tape means work recorded on the phone and not yet confirmed by the server, and nothing else. Waiting is calm: tape is never paired with error language, red, or alarm motion.",
+        "section": "colors"
+      },
+      {
+        "name": "The Orange Is a Ruling Rule",
+        "body": "Safety orange appears only when the server ruled on something (or a delivery stood over an unseen cancel). It always carries the hazard mark and a plain sentence saying what happened and what to do.",
+        "section": "colors"
+      },
+      {
+        "name": "The Faded Stencil Rule",
+        "body": "`*-done-number` is for 28-and-up stencil numerals and stencil marks only. Text that must be read at body size on a finished row uses `*-ink-2`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Stencil Is For Numbers Rule",
+        "body": "The stencil face sets stop numbers and the remaining count, nothing else: no words, no headings, no buttons.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fifteen Floor Rule",
+        "body": "Nothing a driver reads as a sentence is below 15; 13 is reserved for short labels and ids.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Lifted Label Rule",
+        "body": "On the route, exactly one stop is on label stock: the next one. Every other stop is a kraft row.",
+        "section": "layout"
+      },
+      {
+        "name": "The Thumb's Slip Rule",
+        "body": "The irreversible Deliver never sits within a thumb's slip of another control: 32 of empty space above it, and nothing beside it.",
+        "section": "layout"
+      },
+      {
+        "name": "The Only Label Lifts Rule",
+        "body": "Shadows belong to label stock. Kraft rows, tape, stickers and buttons are flat.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Fluting Rule",
+        "body": "The 1-unit fluting line is the system's only divider: between rows, under the done heading, between parcels, and as the \"All sent\" line. Outlines on controls and the box seam under the tape strip are part of those marks, not dividers.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do set stop numbers and the remaining count in Big Shoulders Stencil Display and everything else in the platform sans.",
+      "Do keep exactly one stop on label stock on the route screen, and step the rest down: 40 stencil in secondary ink for upcoming, 28 faded stencil with a stencil check or cross for finished.",
+      "Do give every state its own mark and words: tape tab \"Unsent\", hazard mark on orange, stencil check or cross, marker strike, and the status line.",
+      "Do keep the primary action at 64 and every mid-stop action at 56; chrome at the platform minimum (48 dp / 44 pt).",
+      "Do leave 32 of empty space above Deliver.",
+      "Do show selection as a heavier frame (4) plus a check.",
+      "Do ship all three schemes for every new surface, and give label stock the 2 ink edge in Sun.",
+      "Do honour Reduce Motion: tape becomes a 150 ms crossfade, stickers lose their scale and tilt.",
+      "Do take every sentence from the shared `Copy` so both apps say the same thing."
+    ],
+    "donts": [
+      "Don't use amber tape for anything but unconfirmed work, or orange for anything but a server ruling.",
+      "Don't fill a second block with ink on the same screen; the filled block is that screen's primary action alone.",
+      "Don't round corners on labels, buttons, fields, sheets or blocks; only stickers are die-cut.",
+      "Don't add dividers other than the 1-unit fluting line, and never run the tape seam through text.",
+      "Don't put shadows on kraft rows, tape, stickers or buttons.",
+      "Don't set words in the stencil face, or set body text in faded stencil.",
+      "Don't repeat the stop number as a title in the stop bar.",
+      "Don't fall back to white list cells with colored status chips.",
+      "Don't imitate Amazon's branding, trade dress or app UI."
+    ]
+  }
+}

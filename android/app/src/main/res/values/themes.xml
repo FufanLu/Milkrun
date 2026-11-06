@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window background matches the kraft ground so there is no white flash before Compose draws. -->
+    <style name="Theme.Milkrun" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/kraft</item>
+    </style>
+    <color name="kraft">#C9A57A</color>
+    <color name="ink">#1B1610</color>
+</resources>

@@ -9,7 +9,7 @@ command produced it.
 |---|---|---|
 | 01 | [A delivery made offline: from tap to outbox row](01-offline-delivery.md) | done |
 | 02 | [The same mutation on the server: push, dedup, state machine, pull](02-server-side.md) | done |
-| 03 | Android: one stop screen, from Compose to SQLite | planned (M3) |
+| 03 | [Android: one stop, from a thumb on the glass to a row in SQLite](03-android-stop.md) | done |
 | 04 | iOS: the same stop through MilkrunKit and SwiftUI | planned (M4) |
 | 05 | Proof of delivery: a photo uploaded in resumable parts | planned (M5) |
 | 06 | One trace from the phone to Postgres | planned (M6) |

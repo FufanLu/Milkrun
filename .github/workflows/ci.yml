@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   jvm:
-    name: shared (jvm + android host) · server · simulation · lint
+    name: shared · server · simulation · android · lint
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -25,6 +25,8 @@ jobs:
         run: ./gradlew spotlessCheck
       - name: Test (server tests use Testcontainers Postgres)
         run: ./gradlew jvmTest testAndroidHostTest test
+      - name: Android app (debug build + Roborazzi screenshot goldens)
+        run: ./gradlew :android:app:assembleDebug :android:app:verifyRoborazziDebug
       - name: Server image
         run: |
           ./gradlew :server:app:buildFatJar
