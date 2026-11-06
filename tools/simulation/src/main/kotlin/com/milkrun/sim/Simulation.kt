@@ -75,6 +75,8 @@ public data class SimConfig(
     val restartsPerDevice: Int = 2,
     /** Deliberate protocol bugs, to prove the invariant checks catch them. Empty in real runs. */
     val faults: Set<Fault> = emptySet(),
+    /** Prefix for the route id, so runs sharing one database (Postgres tests) never collide. */
+    val routeTag: String = "",
 )
 
 public enum class Fault {
@@ -141,16 +143,20 @@ public data class SimReport(val seed: Long, val stats: SimStats, val violations:
  * [checkInvariants] must hold.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-public class Simulation(private val cfg: SimConfig) {
+public class Simulation(
+    private val cfg: SimConfig,
+    /** Server storage. In-memory by default; `:server:app` runs the same shifts against Postgres. */
+    storeFactory: () -> SyncStore = { InMemorySyncStore() },
+) {
     private val scheduler = TestCoroutineScheduler()
     private val dispatcher = StandardTestDispatcher(scheduler)
     private val scope = CoroutineScope(dispatcher + SupervisorJob())
     private val rng = Random(cfg.seed)
     private val stats = SimStats()
-    private val route = RouteId("R-SIM-${cfg.seed}")
+    private val route = RouteId("R-SIM-${cfg.routeTag}${cfg.seed}")
     private val rulings = RulingLog()
-    private val memory = InMemorySyncStore()
-    private val store: SyncStore = if (Fault.SERVER_FORGETS_SEQ in cfg.faults) ForgetfulStore(memory) else memory
+    private val baseStore = storeFactory()
+    private val store: SyncStore = if (Fault.SERVER_FORGETS_SEQ in cfg.faults) ForgetfulStore(baseStore) else baseStore
     private val server =
         SyncService(
             store = store,
@@ -319,6 +325,7 @@ public class Simulation(private val cfg: SimConfig) {
 
     private suspend fun serverRollback() {
         delay(cfg.shiftMillis / 3)
+        val memory = baseStore as? InMemorySyncStore ?: error("SERVER_ROLLBACK needs the in-memory store")
         val checkpoint = memory.checkpoint()
         delay(cfg.shiftMillis / 3)
         memory.restore(checkpoint)

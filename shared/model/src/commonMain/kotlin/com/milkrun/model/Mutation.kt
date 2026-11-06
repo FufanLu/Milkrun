@@ -54,3 +54,13 @@ public sealed interface DispatcherCommand {
     @SerialName("resequence")
     public data class Resequence(override val stopId: StopId, val sequence: Int) : DispatcherCommand
 }
+
+/** The `type` discriminator on the wire; also what the outbox, the server's log and metrics record. */
+public val Mutation.wireName: String
+    get() = when (this) {
+        is Mutation.Arrive -> "arrive"
+        is Mutation.ScanParcel -> "scan_parcel"
+        is Mutation.Deliver -> "deliver"
+        is Mutation.Attempt -> "attempt"
+        is Mutation.SetNote -> "set_note"
+    }

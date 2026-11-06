@@ -32,6 +32,8 @@ flowchart LR
 - **确定性仿真测试。** 用固定种子模拟一个班次：每条线路两台设备、调度员改单、请求和响应丢失、
   过期重复、信号死区、App 被杀重启。最近一次：1,000 个种子、66,753 次 mutation、10,910 次响应丢失、
   4,000 次重启，**0 次违反不变量**；注入的协议 bug 在 200/200 次运行里都被抓到（见[图解 01](docs/illustrated/01-offline-delivery.md)）。
+- **服务端定序。** 每次写入都锁住所在线路的行，所以每条线路的版本号是没有空洞的 pull 游标。
+  同一套存储契约测试同时跑在内存实现和 PostgreSQL 17 上，混沌仿真也在 PostgreSQL 上跑：200 个种子，0 违反（见[图解 02](docs/illustrated/02-server-side.md)）。
 - **工业级工程化。** Gradle convention plugins、version catalog、`explicitApi()`、警告即错误、ktlint，
   CI 分 Linux（JVM + Android）和 macOS（iOS 模拟器）两路。
 
@@ -42,7 +44,7 @@ flowchart LR
 | `build-logic/` | Gradle convention plugins（`milkrun.kmp.library`、`milkrun.jvm.service`） |
 | `shared/` | Kotlin Multiplatform 模块（Android、iOS、JVM 三个 target） |
 | `server/core` | 权威同步服务（push/pull/调度），基于存储接口 |
-| `server/app` | 基于 PostgreSQL 的 Ktor 服务（M2） |
+| `server/app` | Ktor 服务：JWT、push/pull、调度与路线规划、PostgreSQL（Flyway、JDBC）、指标、Dockerfile |
 | `android/` | Compose App |
 | `ios/` | SwiftUI App（XcodeGen） |
 | `tools/simulation` | 确定性同步仿真器，以及为图解文档生成数据的 trace |
@@ -55,8 +57,8 @@ flowchart LR
 |---|---|---|
 | M0 | 骨架、工具链、CI、ADR | 完成 |
 | M1 | 共享核心：模型、状态机、HLC、SQLDelight、同步引擎、仿真测试 | 完成 |
-| M2 | 服务端：鉴权、push/pull、Postgres、调度、路线优化 | 下一步 |
-| M3 | Android App | |
+| M2 | 服务端：鉴权、push/pull、Postgres、调度、路线优化 | 完成 |
+| M3 | Android App | 下一步 |
 | M4 | iOS App | |
 | M5 | 签收照片上传、定位、地理围栏 | |
 | M6 | 可观测性与安全 | |
@@ -70,7 +72,8 @@ flowchart LR
 ./gradlew jvmTest                 # 在 JVM 上跑共享模块测试（最快）
 ./gradlew testAndroidHostTest     # 在 Android host 上跑
 ./gradlew iosSimulatorArm64Test   # 在 iOS 模拟器上跑（macOS）
-./gradlew test                    # server core + 仿真（300 个种子 + 故障注入）
+./gradlew test                    # 服务端（Testcontainers Postgres）+ 仿真（300 个种子 + 故障注入）
+docker compose up --build         # Postgres + 同步服务，端口 8080（先 ./gradlew :server:app:buildFatJar）
 ./gradlew spotlessCheck           # ktlint
 ./gradlew :tools:simulation:trace # 重新生成图解 01 里的数据
 ```

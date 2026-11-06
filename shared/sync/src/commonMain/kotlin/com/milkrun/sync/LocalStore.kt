@@ -13,6 +13,7 @@ import com.milkrun.model.RouteId
 import com.milkrun.model.Stop
 import com.milkrun.model.StopId
 import com.milkrun.model.StopStatus
+import com.milkrun.model.wireName
 import com.milkrun.protocol.MutationEnvelope
 import com.milkrun.protocol.SyncApi
 import com.milkrun.database.Outbox as OutboxRow
@@ -75,7 +76,7 @@ internal class LocalStore(val db: MilkrunDatabase) {
         seq = env.seq,
         stop_id = env.mutation.stopId.value,
         hlc = env.hlc.encode(),
-        type = env.mutation.typeName,
+        type = env.mutation.wireName,
         payload = json.encodeToString(Mutation.serializer(), env.mutation),
         created_at = nowMillis,
     )
@@ -107,16 +108,6 @@ internal class LocalStore(val db: MilkrunDatabase) {
 
     private val Boolean.long: Long get() = if (this) 1L else 0L
 }
-
-internal val Mutation.typeName: String
-    get() =
-        when (this) {
-            is Mutation.Arrive -> "arrive"
-            is Mutation.ScanParcel -> "scan_parcel"
-            is Mutation.Deliver -> "deliver"
-            is Mutation.Attempt -> "attempt"
-            is Mutation.SetNote -> "set_note"
-        }
 
 internal fun StopRow.toStop(parcels: List<ParcelRow>): Stop = Stop(
     id = StopId(id),

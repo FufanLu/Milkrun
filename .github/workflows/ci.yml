@@ -23,8 +23,19 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Lint
         run: ./gradlew spotlessCheck
-      - name: Test
+      - name: Test (server tests use Testcontainers Postgres)
         run: ./gradlew jvmTest testAndroidHostTest test
+      - name: Server image
+        run: |
+          ./gradlew :server:app:buildFatJar
+          docker build -t milkrun-server server/app
+          docker run -d --name pg -e POSTGRES_USER=milkrun -e POSTGRES_PASSWORD=milkrun -e POSTGRES_DB=milkrun -p 5432:5432 postgres:17-alpine
+          until docker exec pg pg_isready -U milkrun; do sleep 1; done
+          docker run -d --name server --network host -e DATABASE_URL=jdbc:postgresql://localhost:5432/milkrun \
+            -e DATABASE_PASSWORD=milkrun -e JWT_SECRET=ci-secret-ci-secret-ci-secret-ci-secret -e PORT=8080 milkrun-server
+          for i in $(seq 1 30); do curl -sf localhost:8080/readyz && break; sleep 1; done
+          curl -sf localhost:8080/readyz
+          docker logs server | tail -5
 
   ios:
     name: shared (iOS simulator)

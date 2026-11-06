@@ -15,6 +15,7 @@ import com.milkrun.model.RouteId
 import com.milkrun.model.Stop
 import com.milkrun.model.StopId
 import com.milkrun.model.StopRules
+import com.milkrun.model.wireName
 import com.milkrun.protocol.MutationEnvelope
 import com.milkrun.protocol.Outcome
 import com.milkrun.protocol.PullResponse
@@ -244,7 +245,7 @@ public class SyncEngine(
                     db.rejectionQueries.record(
                         seq = r.seq,
                         stop_id = env.mutation.stopId.value,
-                        type = env.mutation.typeName,
+                        type = env.mutation.wireName,
                         reason = (r.reason ?: RejectReason.UNKNOWN_STOP).name,
                         payload = SyncApi.json.encodeToString(Mutation.serializer(), env.mutation),
                     )

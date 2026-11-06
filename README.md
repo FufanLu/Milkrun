@@ -36,6 +36,10 @@ flowchart LR
   requests and responses, stale duplicates, dead zones and app restarts. Latest run: 1,000 seeds,
   66,753 mutations, 10,910 lost responses, 4,000 restarts, **0 invariant violations**; injected
   protocol bugs are caught in 200/200 runs ([chapter 01](docs/illustrated/01-offline-delivery.md#6--one-trace-is-an-anecdote-66753-mutations-through-seeded-chaos)).
+- **Server-ordered changes.** Every write locks its route row, so the per-route version is a
+  gap-free pull cursor. The same storage contract runs against memory and PostgreSQL 17, and the
+  chaos simulator runs against PostgreSQL too: 200 seeds, 0 violations
+  ([chapter 02](docs/illustrated/02-server-side.md)).
 - **Industrial build.** Gradle convention plugins, version catalog, `explicitApi()`, warnings as
   errors, ktlint, CI on Linux (JVM + Android) and macOS (iOS simulator).
 
@@ -46,7 +50,7 @@ flowchart LR
 | `build-logic/` | Gradle convention plugins (`milkrun.kmp.library`, `milkrun.jvm.service`) |
 | `shared/` | Kotlin Multiplatform modules (Android, iOS, JVM targets) |
 | `server/core` | Authoritative sync service (push/pull/dispatch) over a storage interface |
-| `server/app` | Ktor service on PostgreSQL (M2) |
+| `server/app` | Ktor service: JWT, push/pull, dispatch + route planning, PostgreSQL (Flyway, JDBC), metrics, Dockerfile |
 | `android/` | Compose app |
 | `ios/` | SwiftUI app (XcodeGen) |
 | `tools/simulation` | Deterministic sync simulator and the trace that feeds the illustrated docs |
@@ -59,8 +63,8 @@ flowchart LR
 |---|---|---|
 | M0 | Skeleton, toolchain, CI, ADRs | done |
 | M1 | Shared core: model, state machine, HLC, SQLDelight, sync engine, simulation tests | done |
-| M2 | Server: auth, push/pull, Postgres, dispatch, route optimisation | next |
-| M3 | Android app | |
+| M2 | Server: auth, push/pull, Postgres, dispatch, route optimisation | done |
+| M3 | Android app | next |
 | M4 | iOS app | |
 | M5 | Proof-of-delivery photo upload, location, geofencing | |
 | M6 | Observability and security | |
@@ -74,7 +78,8 @@ Requirements: JDK 21 (Amazon Corretto), Android SDK (API 37), Xcode 26 for iOS.
 ./gradlew jvmTest                 # shared modules on the JVM (fastest)
 ./gradlew testAndroidHostTest     # shared modules on the Android host
 ./gradlew iosSimulatorArm64Test   # shared modules on the iOS simulator (macOS)
-./gradlew test                    # server core + simulation (300 seeds, fault injection)
+./gradlew test                    # server (Testcontainers Postgres) + simulation (300 seeds, fault injection)
+docker compose up --build         # Postgres + sync service on :8080 (after ./gradlew :server:app:buildFatJar)
 ./gradlew spotlessCheck           # ktlint
 ./gradlew :tools:simulation:trace # regenerate the data in docs/illustrated/01
 ```
