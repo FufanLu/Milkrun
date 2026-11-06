@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import platform.Foundation.NSDate
+import platform.Foundation.NSLog
 import platform.Foundation.NSUserDefaults
 import platform.Foundation.timeIntervalSince1970
 
@@ -22,7 +23,25 @@ import platform.Foundation.timeIntervalSince1970
 public object Milkrun {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    public suspend fun start(serverUrl: String): MilkrunSession = MilkrunSession.start(
+    /** Forgets the saved shift so the next start asks for a new route (UI tests, end of shift). */
+    public fun resetSession(): Unit = DefaultsSessionStore().clear()
+
+    public suspend fun start(serverUrl: String): MilkrunSession {
+        installCrashLogging()
+        return startSession(serverUrl)
+    }
+
+    /** Kotlin's uncaught exceptions go to stderr, which iOS drops: put them in the unified log first. */
+    @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
+    private fun installCrashLogging() {
+        val previous = setUnhandledExceptionHook { t ->
+            // NSLog is variadic; a Kotlin String is not bridged there, so the text goes in the format itself.
+            NSLog("Milkrun uncaught Kotlin exception: " + t.stackTraceToString().replace("%", "%%"))
+        }
+        if (previous != null) setUnhandledExceptionHook(previous)
+    }
+
+    private suspend fun startSession(serverUrl: String): MilkrunSession = MilkrunSession.start(
         http = HttpClient(Darwin) { milkrunDefaults(serverUrl) },
         store = DefaultsSessionStore(),
         database = { route -> IosDatabase.create("route-${route.value}.db") },

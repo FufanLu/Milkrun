@@ -40,9 +40,9 @@ jobs:
           docker logs server | tail -5
 
   ios:
-    name: shared (iOS simulator)
+    name: iOS (shared modules · app · Swift tests)
     runs-on: macos-15
-    timeout-minutes: 45
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -54,5 +54,11 @@ jobs:
         with:
           path: ~/.konan
           key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
-      - name: Test on iOS simulator
+      - name: Shared modules on the iOS simulator
         run: ./gradlew iosSimulatorArm64Test
+      - name: iOS app (MilkrunKit + SwiftUI, Swift 6 strict concurrency) and Swift tests
+        run: |
+          brew install xcodegen
+          ios/build-kit.sh
+          SIM=$(xcrun simctl list devices available | grep -m1 -E "iPhone [0-9]+ " | grep -oE "[0-9A-F-]{36}")
+          xcodebuild -project ios/Milkrun.xcodeproj -scheme Milkrun -destination "id=$SIM" -derivedDataPath ios/build/dd test

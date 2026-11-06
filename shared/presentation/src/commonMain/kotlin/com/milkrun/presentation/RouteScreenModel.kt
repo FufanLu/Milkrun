@@ -53,9 +53,15 @@ public class RouteScreenModel(
     public suspend fun scan(stop: StopId, parcel: ParcelId): RecordResult =
         engine.record(Mutation.ScanParcel(stop, parcel, now()))
 
-    /** Delivers every parcel at the stop with [handoff]. */
-    public suspend fun deliver(stop: StopId, parcels: List<ParcelId>, handoff: HandoffMethod): RecordResult =
-        engine.record(Mutation.Deliver(stop, parcels, handoff, now()))
+    /**
+     * Delivers every parcel at the stop with [handoff]. The parcel list is resolved here, not passed
+     * in: a `List<ParcelId>` built in Swift arrives with its value-class elements unboxed (as
+     * strings) and fails the cast inside StopRules. Only single value-class parameters bridge safely.
+     */
+    public suspend fun deliver(stop: StopId, handoff: HandoffMethod): RecordResult {
+        val parcels = stops.value.firstOrNull { it.stop.id == stop }?.stop?.parcels?.map { it.id }.orEmpty()
+        return engine.record(Mutation.Deliver(stop, parcels, handoff, now()))
+    }
 
     public suspend fun attempt(stop: StopId, reason: AttemptReason): RecordResult =
         engine.record(Mutation.Attempt(stop, reason, now()))
@@ -105,7 +111,12 @@ public class RouteScreenModel(
             next = next,
             upcoming = open - setOfNotNull(next),
             done = done.sortedByDescending { it.sequence },
-            notices = rejections.map { r ->
+            // A stop that ended up delivered (for example after a cancel the driver never saw) makes
+            // its earlier rejected arrive/scan moot; telling the driver to "bring the parcels back"
+            // would contradict the delivery they just made.
+            notices = rejections.filterNot { r ->
+                cards.any { it.id == r.stopId && it.status == StopStatus.DELIVERED }
+            }.map { r ->
                 val number = numbers[r.stopId] ?: r.stopId.value
                 val (title, body) = Copy.rejection(number, r.reason)
                 Notice(r.seq, number, title, body)

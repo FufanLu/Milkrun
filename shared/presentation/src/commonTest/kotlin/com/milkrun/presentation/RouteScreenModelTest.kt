@@ -112,7 +112,7 @@ class RouteScreenModelTest {
         val (_, m) = model(server)
         server.online = false
         val first = m.state.value.next!!
-        m.deliver(first.id, listOf(ParcelId("P1-0"), ParcelId("P1-1")), HandoffMethod.FRONT_DOOR)
+        m.deliver(first.id, HandoffMethod.FRONT_DOOR)
         settle()
         val s = m.state.value
         assertEquals("02", s.next?.number)
@@ -155,11 +155,28 @@ class RouteScreenModelTest {
         val (_, m) = model(Server(listOf(stop(1))))
         val before = m.stop(StopId("S-1")).first()!!
         assertTrue(before.canArrive && before.canDeliver && before.canAttempt)
-        m.deliver(StopId("S-1"), listOf(ParcelId("P1-0")), HandoffMethod.LOCKER)
+        m.deliver(StopId("S-1"), HandoffMethod.LOCKER)
         settle()
         val after = m.stop(StopId("S-1")).first()!!
         assertEquals(StopStatus.DELIVERED, after.card.status)
         assertTrue(!after.canArrive && !after.canDeliver && !after.canAttempt && !after.canScan)
         assertEquals("P1-0", after.parcels.single().shortCode)
+    }
+
+    @Test
+    fun aRejectedArrivalIsNotShownOnceTheStopIsDelivered() = runTest {
+        val server = Server(listOf(stop(3)))
+        val (engine, m) = model(server)
+        server.reject = RejectReason.STOP_CANCELLED
+        m.arrive(StopId("S-3"))
+        engine.syncOnce()
+        settle()
+        assertEquals(1, m.state.value.notices.size)
+        // The delivery stands (server accepts it, flagged) and the stop's state comes back delivered.
+        server.reject = null
+        server.stops = listOf(stop(3).copy(status = StopStatus.DELIVERED))
+        m.deliver(StopId("S-3"), HandoffMethod.FRONT_DOOR)
+        settle()
+        assertEquals(emptyList(), m.state.value.notices)
     }
 }

@@ -59,7 +59,8 @@ flowchart LR
 | `android/app` | Compose App：Material 3 主题化为打包间风格、WorkManager 后台同步、Roborazzi 截图黄金图 |
 | `shared/presentation` | 两个 App 共用的页面状态和司机文案 |
 | `design/` | DESIGN.md、模板字体（OFL） |
-| `ios/` | SwiftUI App（XcodeGen） |
+| `ios/` | SwiftUI App（Swift 6 严格并发），经 SKIE 调用 MilkrunKit；XcodeGen；Swift Testing + 跑完整班次的 XCUITest |
+| `shared/kit` | 为 iOS 构建 `MilkrunKit.xcframework` |
 | `tools/simulation` | 确定性同步仿真器，以及为图解文档生成数据的 trace |
 | `docs/illustrated/` | 跟着一个包裹走完整个系统（图解，真实数据） |
 | `docs/adr/` | 架构决策记录 |
@@ -72,8 +73,8 @@ flowchart LR
 | M1 | 共享核心：模型、状态机、HLC、SQLDelight、同步引擎、仿真测试 | 完成 |
 | M2 | 服务端：鉴权、push/pull、Postgres、调度、路线优化 | 完成 |
 | M3 | Android App | 完成 |
-| M4 | iOS App | 下一步 |
-| M5 | 签收照片上传、定位、地理围栏 | |
+| M4 | iOS App | 完成 |
+| M5 | 签收照片上传、定位、地理围栏 | 下一步 |
 | M6 | 可观测性与安全 | |
 | M7 | 压测与混沌测试 | |
 
@@ -87,6 +88,8 @@ flowchart LR
 ./gradlew iosSimulatorArm64Test   # 在 iOS 模拟器上跑（macOS）
 ./gradlew test                    # 服务端（Testcontainers Postgres）+ 仿真（300 个种子 + 故障注入）
 docker compose up --build         # Postgres + 同步服务，端口 8080（先 ./gradlew :server:app:buildFatJar）
+ios/build-kit.sh                  # MilkrunKit.xcframework + Xcode 工程（需要 xcodegen）
+xcodebuild -project ios/Milkrun.xcodeproj -scheme Milkrun -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test
 ./gradlew spotlessCheck           # ktlint
 ./gradlew :tools:simulation:trace # 重新生成图解 01 里的数据
 ```

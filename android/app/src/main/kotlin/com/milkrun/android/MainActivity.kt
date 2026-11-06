@@ -132,7 +132,7 @@ private fun App(session: MilkrunSession, sun: Boolean, onToggleSun: () -> Unit) 
                 onArrive = { scope.launch { report(model.arrive(id)) } },
                 onScan = { p -> scope.launch { report(model.scan(id, p)) } },
                 onDeliver = { h ->
-                    scope.launch { report(model.deliver(id, d.parcels.map { it.id }, h), done = true) }
+                    scope.launch { report(model.deliver(id, h), done = true) }
                 },
                 onAttempt = { r -> scope.launch { report(model.attempt(id, r), done = true) } },
                 onSaveNote = { t -> scope.launch { report(model.setNote(id, t)) } },

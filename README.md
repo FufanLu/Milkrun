@@ -66,7 +66,8 @@ flowchart LR
 | `android/app` | Compose app: Material 3 themed into the packing-room world, WorkManager drain, Roborazzi goldens |
 | `shared/presentation` | Screen state and driver-facing copy shared by both apps |
 | `design/` | DESIGN.md, the stencil font (OFL) |
-| `ios/` | SwiftUI app (XcodeGen) |
+| `ios/` | SwiftUI app (Swift 6, strict concurrency) on MilkrunKit via SKIE; XcodeGen; Swift Testing + an XCUITest that drives a whole shift |
+| `shared/kit` | Builds `MilkrunKit.xcframework` for iOS |
 | `tools/simulation` | Deterministic sync simulator and the trace that feeds the illustrated docs |
 | `docs/illustrated/` | One parcel followed through the system, with real data |
 | `docs/adr/` | Architecture decision records |
@@ -79,8 +80,8 @@ flowchart LR
 | M1 | Shared core: model, state machine, HLC, SQLDelight, sync engine, simulation tests | done |
 | M2 | Server: auth, push/pull, Postgres, dispatch, route optimisation | done |
 | M3 | Android app | done |
-| M4 | iOS app | next |
-| M5 | Proof-of-delivery photo upload, location, geofencing | |
+| M4 | iOS app | done |
+| M5 | Proof-of-delivery photo upload, location, geofencing | next |
 | M6 | Observability and security | |
 | M7 | Load and chaos testing | |
 
@@ -94,6 +95,8 @@ Requirements: JDK 21 (Amazon Corretto), Android SDK (API 37), Xcode 26 for iOS.
 ./gradlew iosSimulatorArm64Test   # shared modules on the iOS simulator (macOS)
 ./gradlew test                    # server (Testcontainers Postgres) + simulation (300 seeds, fault injection)
 docker compose up --build         # Postgres + sync service on :8080 (after ./gradlew :server:app:buildFatJar)
+ios/build-kit.sh                  # MilkrunKit.xcframework + Xcode project (needs xcodegen)
+xcodebuild -project ios/Milkrun.xcodeproj -scheme Milkrun -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test
 ./gradlew spotlessCheck           # ktlint
 ./gradlew :tools:simulation:trace # regenerate the data in docs/illustrated/01
 ```
