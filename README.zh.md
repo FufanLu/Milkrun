@@ -1,0 +1,71 @@
+[English](README.md) | **中文**
+
+# Milkrun
+
+**面向末端配送司机的离线优先平台。** Kotlin Multiplatform 共享核心，同时供 SwiftUI iOS App 和
+Jetpack Compose Android App 使用，通过 Kotlin（Ktor）服务端同步。
+
+*milk run* 指一条固定的多站点配送线路。司机在地下车库、电梯、乡村道路上跑这条线，网络时有时无；
+Milkrun 的目标是：无论网络怎样，App 既不丢一次送达，也不重复记一次送达。
+
+```mermaid
+flowchart LR
+    subgraph 手机
+        UI_I["iOS · SwiftUI"] --> KIT["MilkrunKit (KMP)"]
+        UI_A["Android · Compose"] --> CORE
+        KIT --> CORE["shared/*<br/>model · protocol · database · sync"]
+        CORE --> DB[("SQLite<br/>视图 + outbox")]
+    end
+    CORE -- "push mutation（seq）" --> API
+    API -- "pull 增量（cursor）" --> CORE
+    subgraph 服务端
+        API["server · Ktor"] --> PG[("PostgreSQL")]
+        API --> S3[("S3 / MinIO<br/>签收照片")]
+    end
+```
+
+## 亮点
+
+- **两个 App 共用一套同步引擎。** outbox 与乐观更新写在同一个 SQLite 事务里；push 按每个客户端的
+  序号去重；pull 基于游标；未确认的 mutation 在服务端状态上 rebase（见 [ADR 0002](docs/adr/0002-sync-protocol.md)）。
+- **服务端裁决冲突。** 站点状态机放在 `shared/model`，同一份代码同时编译进手机和服务端，两边规则一致。
+- **确定性仿真测试。** 用固定种子驱动会丢包、重复、乱序的网络；每次运行都必须收敛，不丢、不重。
+- **工业级工程化。** Gradle convention plugins、version catalog、`explicitApi()`、警告即错误、ktlint，
+  CI 分 Linux（JVM + Android）和 macOS（iOS 模拟器）两路。
+
+## 目录
+
+| 路径 | 内容 |
+|---|---|
+| `build-logic/` | Gradle convention plugins（`milkrun.kmp.library`、`milkrun.jvm.service`） |
+| `shared/` | Kotlin Multiplatform 模块（Android、iOS、JVM 三个 target） |
+| `server/` | Ktor 同步服务 |
+| `android/` | Compose App |
+| `ios/` | SwiftUI App（XcodeGen） |
+| `tools/` | 压测与混沌模拟器 |
+| `docs/illustrated/` | 跟着一个包裹走完整个系统（图解，真实数据） |
+| `docs/adr/` | 架构决策记录 |
+
+## 进度
+
+| 里程碑 | 范围 | 状态 |
+|---|---|---|
+| M0 | 骨架、工具链、CI、ADR | 完成 |
+| M1 | 共享核心：模型、状态机、HLC、SQLDelight、同步引擎、仿真测试 | 下一步 |
+| M2 | 服务端：鉴权、push/pull、Postgres、调度、路线优化 | |
+| M3 | Android App | |
+| M4 | iOS App | |
+| M5 | 签收照片上传、定位、地理围栏 | |
+| M6 | 可观测性与安全 | |
+| M7 | 压测与混沌测试 | |
+
+## 构建
+
+需要 JDK 21（Amazon Corretto）、Android SDK（API 37），iOS 需要 Xcode 26。
+
+```bash
+./gradlew jvmTest                 # 在 JVM 上跑共享模块测试（最快）
+./gradlew testAndroidHostTest     # 在 Android host 上跑
+./gradlew iosSimulatorArm64Test   # 在 iOS 模拟器上跑（macOS）
+./gradlew spotlessCheck           # ktlint
+```

@@ -1,0 +1,23 @@
+# Gradle / Kotlin
+.gradle/
+build/
+.kotlin/
+local.properties
+*.hprof
+
+# IDE
+.idea/
+*.iml
+.fleet/
+.vscode/
+
+# Xcode / Swift
+ios/**/*.xcodeproj/
+xcuserdata/
+DerivedData/
+.build/
+.swiftpm/
+*.xcframework
+
+# OS
+.DS_Store
