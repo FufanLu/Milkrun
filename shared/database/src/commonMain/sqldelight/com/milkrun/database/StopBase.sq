@@ -1,0 +1,16 @@
+-- Last snapshot of each stop confirmed by the server, as the JSON the server sent.
+-- Only read during rebase; the UI never reads it.
+CREATE TABLE stop_base (
+    id       TEXT    NOT NULL PRIMARY KEY,
+    route_id TEXT    NOT NULL,
+    snapshot TEXT    NOT NULL
+);
+
+replaceBase:
+INSERT OR REPLACE INTO stop_base VALUES (?, ?, ?);
+
+baseById:
+SELECT snapshot FROM stop_base WHERE id = ?;
+
+baseIdsForRoute:
+SELECT id FROM stop_base WHERE route_id = ?;

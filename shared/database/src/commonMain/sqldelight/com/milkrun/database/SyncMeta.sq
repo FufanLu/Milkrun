@@ -1,0 +1,11 @@
+-- Small key/value table for sync bookkeeping: client id, next seq, pull cursor, last HLC.
+CREATE TABLE sync_meta (
+    key   TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+get:
+SELECT value FROM sync_meta WHERE key = ?;
+
+put:
+INSERT OR REPLACE INTO sync_meta VALUES (?, ?);

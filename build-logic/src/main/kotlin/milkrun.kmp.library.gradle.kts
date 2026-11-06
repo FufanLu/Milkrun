@@ -24,6 +24,11 @@ kotlin {
     jvm()
     iosArm64()
     iosSimulatorArm64()
+    // SQLDelight's native driver binds to the system SQLite; every iOS binary (framework or test
+    // executable) that ends up linking it needs the library.
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        binaries.all { linkerOpts("-lsqlite3") }
+    }
 
     compilerOptions {
         allWarningsAsErrors.set(true)

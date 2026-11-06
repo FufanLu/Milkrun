@@ -1,0 +1,19 @@
+-- Mutations the server ruled against. Kept so the driver can be told ("Stop 14 was cancelled by
+-- dispatch"), not retried.
+CREATE TABLE rejection (
+    seq          INTEGER NOT NULL PRIMARY KEY,
+    stop_id      TEXT    NOT NULL,
+    type         TEXT    NOT NULL,
+    reason       TEXT    NOT NULL,
+    payload      TEXT    NOT NULL,
+    seen         INTEGER NOT NULL DEFAULT 0
+);
+
+record:
+INSERT OR IGNORE INTO rejection(seq, stop_id, type, reason, payload) VALUES (?, ?, ?, ?, ?);
+
+unseen:
+SELECT * FROM rejection WHERE seen = 0 ORDER BY seq;
+
+markSeen:
+UPDATE rejection SET seen = 1 WHERE seq = ?;

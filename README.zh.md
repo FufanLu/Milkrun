@@ -29,7 +29,9 @@ flowchart LR
 - **两个 App 共用一套同步引擎。** outbox 与乐观更新写在同一个 SQLite 事务里；push 按每个客户端的
   序号去重；pull 基于游标；未确认的 mutation 在服务端状态上 rebase（见 [ADR 0002](docs/adr/0002-sync-protocol.md)）。
 - **服务端裁决冲突。** 站点状态机放在 `shared/model`，同一份代码同时编译进手机和服务端，两边规则一致。
-- **确定性仿真测试。** 用固定种子驱动会丢包、重复、乱序的网络；每次运行都必须收敛，不丢、不重。
+- **确定性仿真测试。** 用固定种子模拟一个班次：每条线路两台设备、调度员改单、请求和响应丢失、
+  过期重复、信号死区、App 被杀重启。最近一次：1,000 个种子、66,753 次 mutation、10,910 次响应丢失、
+  4,000 次重启，**0 次违反不变量**；注入的协议 bug 在 200/200 次运行里都被抓到（见[图解 01](docs/illustrated/01-offline-delivery.md)）。
 - **工业级工程化。** Gradle convention plugins、version catalog、`explicitApi()`、警告即错误、ktlint，
   CI 分 Linux（JVM + Android）和 macOS（iOS 模拟器）两路。
 
@@ -39,10 +41,11 @@ flowchart LR
 |---|---|
 | `build-logic/` | Gradle convention plugins（`milkrun.kmp.library`、`milkrun.jvm.service`） |
 | `shared/` | Kotlin Multiplatform 模块（Android、iOS、JVM 三个 target） |
-| `server/` | Ktor 同步服务 |
+| `server/core` | 权威同步服务（push/pull/调度），基于存储接口 |
+| `server/app` | 基于 PostgreSQL 的 Ktor 服务（M2） |
 | `android/` | Compose App |
 | `ios/` | SwiftUI App（XcodeGen） |
-| `tools/` | 压测与混沌模拟器 |
+| `tools/simulation` | 确定性同步仿真器，以及为图解文档生成数据的 trace |
 | `docs/illustrated/` | 跟着一个包裹走完整个系统（图解，真实数据） |
 | `docs/adr/` | 架构决策记录 |
 
@@ -51,8 +54,8 @@ flowchart LR
 | 里程碑 | 范围 | 状态 |
 |---|---|---|
 | M0 | 骨架、工具链、CI、ADR | 完成 |
-| M1 | 共享核心：模型、状态机、HLC、SQLDelight、同步引擎、仿真测试 | 下一步 |
-| M2 | 服务端：鉴权、push/pull、Postgres、调度、路线优化 | |
+| M1 | 共享核心：模型、状态机、HLC、SQLDelight、同步引擎、仿真测试 | 完成 |
+| M2 | 服务端：鉴权、push/pull、Postgres、调度、路线优化 | 下一步 |
 | M3 | Android App | |
 | M4 | iOS App | |
 | M5 | 签收照片上传、定位、地理围栏 | |
@@ -67,5 +70,7 @@ flowchart LR
 ./gradlew jvmTest                 # 在 JVM 上跑共享模块测试（最快）
 ./gradlew testAndroidHostTest     # 在 Android host 上跑
 ./gradlew iosSimulatorArm64Test   # 在 iOS 模拟器上跑（macOS）
+./gradlew test                    # server core + 仿真（300 个种子 + 故障注入）
 ./gradlew spotlessCheck           # ktlint
+./gradlew :tools:simulation:trace # 重新生成图解 01 里的数据
 ```

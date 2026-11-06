@@ -8,5 +8,9 @@ kotlin {
         commonMain.dependencies {
             api(libs.kotlinx.serialization.json)
         }
+        commonTest.dependencies {
+            implementation(libs.kotest.property)
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }

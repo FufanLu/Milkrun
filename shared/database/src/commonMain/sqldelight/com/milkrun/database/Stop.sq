@@ -1,0 +1,64 @@
+-- The stops the UI reads: last server snapshot with this device's pending mutations replayed on top
+-- (ADR 0002). Rewritten by the sync engine; never written by UI code directly.
+CREATE TABLE stop (
+    id              TEXT    NOT NULL PRIMARY KEY,
+    route_id        TEXT    NOT NULL,
+    sequence        INTEGER NOT NULL,
+    address         TEXT    NOT NULL,
+    lat             REAL    NOT NULL,
+    lng             REAL    NOT NULL,
+    status          TEXT    NOT NULL,
+    attempt_reason  TEXT,
+    handoff         TEXT,
+    arrived_at      INTEGER,
+    completed_at    INTEGER,
+    note            TEXT    NOT NULL,
+    note_hlc        TEXT    NOT NULL,
+    conflict        TEXT,
+    -- number of this device's unconfirmed mutations that touch the stop; drives the "syncing" badge
+    pending         INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX stop_by_route ON stop(route_id, sequence);
+
+CREATE TABLE parcel (
+    id          TEXT    NOT NULL PRIMARY KEY,
+    stop_id     TEXT    NOT NULL,
+    position    INTEGER NOT NULL,
+    description TEXT    NOT NULL,
+    scanned     INTEGER NOT NULL,
+    delivered   INTEGER NOT NULL
+);
+
+CREATE INDEX parcel_by_stop ON parcel(stop_id, position);
+
+replaceStop:
+INSERT OR REPLACE INTO stop
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteParcels:
+DELETE FROM parcel WHERE stop_id = ?;
+
+insertParcel:
+INSERT INTO parcel VALUES (?, ?, ?, ?, ?, ?);
+
+stopsForRoute:
+SELECT * FROM stop WHERE route_id = ? ORDER BY sequence;
+
+stopById:
+SELECT * FROM stop WHERE id = ?;
+
+parcelsForStop:
+SELECT * FROM parcel WHERE stop_id = ? ORDER BY position;
+
+parcelsForRoute:
+SELECT parcel.* FROM parcel JOIN stop ON stop.id = parcel.stop_id
+WHERE stop.route_id = ? ORDER BY stop.sequence, parcel.position;
+
+routeProgress:
+SELECT
+    count(*) AS total,
+    count(CASE WHEN status = 'DELIVERED' THEN 1 END) AS delivered,
+    count(CASE WHEN status = 'ATTEMPTED' THEN 1 END) AS attempted,
+    count(CASE WHEN pending > 0 THEN 1 END) AS unsynced
+FROM stop WHERE route_id = ?;

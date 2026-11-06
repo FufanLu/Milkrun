@@ -7,7 +7,7 @@ command produced it.
 
 | # | Chapter | Status |
 |---|---|---|
-| 01 | A delivery made offline: from tap to outbox row | planned (M1) |
+| 01 | [A delivery made offline: from tap to outbox row](01-offline-delivery.md) | done |
 | 02 | The same mutation on the server: push, dedup, state machine, pull | planned (M2) |
 | 03 | Android: one stop screen, from Compose to SQLite | planned (M3) |
 | 04 | iOS: the same stop through MilkrunKit and SwiftUI | planned (M4) |

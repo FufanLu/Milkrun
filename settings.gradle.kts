@@ -24,3 +24,8 @@ rootProject.name = "Milkrun"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":shared:model")
+include(":shared:protocol")
+include(":shared:database")
+include(":shared:sync")
+include(":server:core")
+include(":tools:simulation")

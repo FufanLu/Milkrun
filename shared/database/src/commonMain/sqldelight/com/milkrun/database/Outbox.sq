@@ -1,0 +1,33 @@
+-- Local mutation log. A row is written in the same transaction that applies the mutation to `stop`,
+-- and deleted only once the server reports lastProcessedSeq >= seq.
+CREATE TABLE outbox (
+    seq        INTEGER NOT NULL PRIMARY KEY,
+    stop_id    TEXT    NOT NULL,
+    hlc        TEXT    NOT NULL,
+    type       TEXT    NOT NULL,
+    payload    TEXT    NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE INDEX outbox_by_stop ON outbox(stop_id, seq);
+
+append:
+INSERT INTO outbox VALUES (?, ?, ?, ?, ?, ?);
+
+after:
+SELECT * FROM outbox WHERE seq > ? ORDER BY seq LIMIT ?;
+
+pendingForStop:
+SELECT * FROM outbox WHERE stop_id = ? ORDER BY seq;
+
+stopsTouchedUpTo:
+SELECT DISTINCT stop_id FROM outbox WHERE seq <= ?;
+
+confirmUpTo:
+DELETE FROM outbox WHERE seq <= ?;
+
+depth:
+SELECT count(*) FROM outbox;
+
+oldestCreatedAt:
+SELECT min(created_at) FROM outbox;
