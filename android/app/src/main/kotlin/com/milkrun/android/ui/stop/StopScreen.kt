@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontFamily
@@ -73,6 +74,7 @@ import com.milkrun.model.ParcelId
 import com.milkrun.model.StopStatus
 import com.milkrun.presentation.Copy
 import com.milkrun.presentation.ParcelRow
+import com.milkrun.presentation.PhotoState
 import com.milkrun.presentation.StopDetailState
 
 /**
@@ -90,6 +92,7 @@ fun StopScreen(
     onAttempt: (AttemptReason) -> Unit,
     onSaveNote: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onTakePhoto: () -> Unit = {},
 ) {
     val c = LocalMilkrunColors.current
     val card = state.card
@@ -183,6 +186,10 @@ fun StopScreen(
                         if (i < state.parcels.lastIndex) Fluting()
                     }
                 }
+            }
+            if (state.canAttachPhoto || state.photo != PhotoState.None) {
+                Spacer(Modifier.height(Space.xl))
+                ProofSection(state.photo, enabled = state.canAttachPhoto, onTakePhoto = onTakePhoto)
             }
             Spacer(Modifier.height(Space.xl))
             NoteField(card.note, onSaveNote)
@@ -371,5 +378,38 @@ private fun HandoffGrid(selected: HandoffMethod, onSelect: (HandoffMethod) -> Un
                 }
             }
         }
+    }
+}
+
+/** Proof of delivery: one photo per finished stop, uploaded on its own resumable channel. */
+@Composable
+private fun ProofSection(photo: PhotoState, enabled: Boolean, onTakePhoto: () -> Unit) {
+    val c = LocalMilkrunColors.current
+    Column(Modifier.padding(horizontal = Space.gutter)) {
+        Text(
+            "Proof",
+            style = MaterialTheme.typography.titleSmall,
+            color = c.ink2,
+            modifier = Modifier.padding(bottom = Space.s),
+        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                photo.label,
+                style = MaterialTheme.typography.bodyLarge,
+                color = c.ink,
+                modifier = Modifier.weight(1f).semantics {
+                    liveRegion =
+                        androidx.compose.ui.semantics.LiveRegionMode.Polite
+                },
+            )
+            if (photo is PhotoState.Uploading) TapeTab(visible = true)
+        }
+        Spacer(Modifier.height(Space.s))
+        OutlineBlockButton(
+            if (photo == PhotoState.None) "Take photo" else "Retake photo",
+            onClick = onTakePhoto,
+            enabled = enabled,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }

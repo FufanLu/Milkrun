@@ -78,7 +78,26 @@ public data class StopDetailState(
     val canScan: Boolean,
     val canDeliver: Boolean,
     val canAttempt: Boolean,
+    /** A finished stop can take a proof-of-delivery photo. */
+    val canAttachPhoto: Boolean = false,
+    val photo: PhotoState = PhotoState.None,
 )
+
+/** Where the stop's proof photo is. */
+public sealed interface PhotoState {
+    public data object None : PhotoState
+
+    public data class Uploading(val partsSent: Int, val parts: Int) : PhotoState
+
+    public data object Sent : PhotoState
+
+    public val label: String
+        get() = when (this) {
+            None -> "No photo"
+            is Uploading -> "Photo uploading · $partsSent of $parts"
+            Sent -> "Photo sent"
+        }
+}
 
 public data class ParcelRow(
     val id: ParcelId,

@@ -6,6 +6,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.shared.network)
+            api(projects.shared.proof)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)

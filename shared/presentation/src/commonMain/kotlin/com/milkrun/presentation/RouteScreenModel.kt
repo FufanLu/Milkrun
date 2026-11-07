@@ -7,6 +7,8 @@ import com.milkrun.model.ParcelId
 import com.milkrun.model.Stop
 import com.milkrun.model.StopId
 import com.milkrun.model.StopStatus
+import com.milkrun.proof.ProofUploader
+import com.milkrun.proof.UploadJob
 import com.milkrun.sync.RecordResult
 import com.milkrun.sync.SyncEngine
 import com.milkrun.sync.SyncStatus
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,7 +33,11 @@ public class RouteScreenModel(
     private val engine: SyncEngine,
     private val scope: CoroutineScope,
     private val now: () -> Long,
+    private val uploader: ProofUploader? = null,
 ) {
+    private val uploads: StateFlow<List<UploadJob>> =
+        (uploader?.jobs() ?: flowOf(emptyList())).stateIn(scope, SharingStarted.Eagerly, emptyList())
+
     private val stops: StateFlow<List<com.milkrun.sync.StopItem>> =
         engine.stops().stateIn(scope, SharingStarted.Eagerly, emptyList())
 
@@ -43,8 +50,26 @@ public class RouteScreenModel(
     }.stateIn(scope, SharingStarted.Eagerly, RouteUiState.LOADING)
 
     /** Detail for one stop, updating as the driver works it and as the server rules. */
-    public fun stop(id: StopId): Flow<StopDetailState?> = stops.map { items ->
-        items.firstOrNull { it.stop.id == id }?.let { detail(it.stop, it.unsynced) }
+    public fun stop(id: StopId): Flow<StopDetailState?> = combine(stops, uploads) { items, jobs ->
+        items.firstOrNull { it.stop.id == id }?.let { item ->
+            val job = jobs.lastOrNull { it.stopId == id }
+            val photo = when {
+                job == null && item.stop.proof == null -> PhotoState.None
+                job == null || job.done -> PhotoState.Sent
+                else -> PhotoState.Uploading(job.partsSent, job.parts)
+            }
+            detail(item.stop, item.unsynced).copy(photo = photo)
+        }
+    }
+
+    /**
+     * Queues the photo at [path] for upload and records which upload proves the stop. The mutation
+     * goes through the outbox like any other; the bytes follow on their own resumable channel.
+     */
+    public suspend fun attachPhoto(stop: StopId, path: String): RecordResult {
+        val up = checkNotNull(uploader) { "no uploader in this session" }
+        val job = up.enqueue(stop, path)
+        return engine.record(Mutation.AttachProof(stop, job.uploadId, job.sha256))
     }
 
     public suspend fun arrive(stop: StopId): RecordResult = engine.record(Mutation.Arrive(stop, now()))
@@ -73,7 +98,10 @@ public class RouteScreenModel(
     }
 
     /** Pull-to-refresh, app foreground, connectivity regained. */
-    public fun refresh(): Unit = engine.requestSync()
+    public fun refresh() {
+        engine.requestSync()
+        uploader?.requestDrain()
+    }
 
     /** For callers that need a reason in words, such as a refused tap. */
     public fun refusal(result: RecordResult, stopNumber: String): String? =
@@ -149,6 +177,7 @@ public class RouteScreenModel(
             canScan = open,
             canDeliver = open && s.parcels.isNotEmpty(),
             canAttempt = open,
+            canAttachPhoto = uploader != null && (s.status == StopStatus.DELIVERED || s.status == StopStatus.ATTEMPTED),
         )
     }
 }

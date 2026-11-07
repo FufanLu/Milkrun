@@ -81,8 +81,8 @@ flowchart LR
 | M2 | Server: auth, push/pull, Postgres, dispatch, route optimisation | done |
 | M3 | Android app | done |
 | M4 | iOS app | done |
-| M5 | Proof-of-delivery photo upload, location, geofencing | next |
-| M6 | Observability and security | |
+| M5 | Proof-of-delivery photo upload, location, geofencing | photo + arrival detector done; location wiring pending |
+| M6 | Observability and security | next |
 | M7 | Load and chaos testing | |
 
 ## Build

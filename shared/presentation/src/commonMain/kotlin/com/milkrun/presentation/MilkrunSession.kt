@@ -3,6 +3,8 @@ package com.milkrun.presentation
 import com.milkrun.database.MilkrunDatabase
 import com.milkrun.model.RouteId
 import com.milkrun.network.KtorSyncTransport
+import com.milkrun.proof.KtorUploadTransport
+import com.milkrun.proof.ProofUploader
 import com.milkrun.protocol.DevSession
 import com.milkrun.sync.SyncEngine
 import io.ktor.client.HttpClient
@@ -50,14 +52,20 @@ public class MilkrunSession private constructor(
             wallClock: () -> Long,
         ): MilkrunSession {
             val session = store.load() ?: http.post(DevSession.PATH).body<DevSession>().also(store::save)
+            val routeDb = database(session.routeId)
             val engine = SyncEngine(
-                database = database(session.routeId),
+                database = routeDb,
                 transport = KtorSyncTransport(http) { session.driverToken },
                 routeId = session.routeId,
                 wallClock = wallClock,
             )
-            val loop = scope.launch { engine.run() }
-            return MilkrunSession(session, engine, RouteScreenModel(engine, scope, wallClock), loop)
+            val uploader =
+                ProofUploader(routeDb, KtorUploadTransport(http) { session.driverToken }, session.routeId, wallClock)
+            val loop = scope.launch {
+                launch { engine.run() }
+                launch { uploader.run() }
+            }
+            return MilkrunSession(session, engine, RouteScreenModel(engine, scope, wallClock, uploader), loop)
         }
     }
 }

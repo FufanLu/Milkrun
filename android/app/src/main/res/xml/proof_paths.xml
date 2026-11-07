@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The camera app writes proof photos here; they stay private to Milkrun and are deleted with the route. -->
+<paths>
+    <files-path name="proof" path="proof/" />
+</paths>

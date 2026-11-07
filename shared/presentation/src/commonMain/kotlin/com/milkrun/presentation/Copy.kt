@@ -76,6 +76,10 @@ public object Copy {
         RejectReason.NO_PARCELS ->
             "Stop $stop needs at least one parcel" to "Scan the parcels you are leaving, then deliver again."
 
+        RejectReason.STOP_NOT_FINISHED ->
+            "The photo for stop $stop arrived before the stop was finished" to
+                "Deliver or record the attempt first, then take the photo again."
+
         RejectReason.NOTE_TOO_LONG ->
             "The note on stop $stop was too long" to "Keep notes under 500 characters."
     }

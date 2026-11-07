@@ -70,6 +70,10 @@ public enum class ConflictFlag {
 @Serializable
 public data class GeoPoint(val lat: Double, val lng: Double)
 
+/** The photo attached to a finished stop: which upload, and the hash the bytes must match. */
+@Serializable
+public data class ProofRef(val uploadId: String, val sha256: String)
+
 @Serializable
 public data class Parcel(
     val id: ParcelId,
@@ -95,6 +99,7 @@ public data class Stop(
     val note: String = "",
     val noteHlc: Hlc = Hlc.ZERO,
     val conflict: ConflictFlag? = null,
+    val proof: ProofRef? = null,
 ) {
     public fun parcel(id: ParcelId): Parcel? = parcels.firstOrNull { it.id == id }
 }

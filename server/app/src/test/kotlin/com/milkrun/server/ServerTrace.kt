@@ -50,6 +50,8 @@ import java.sql.DriverManager
  * ./gradlew :server:app:trace -PpgAdminUrl=jdbc:postgresql://localhost:55432/postgres -PpgLog=/path/to/server.log
  * ```
  */
+private val prettyJson = Json { prettyPrint = true }
+
 object ServerTrace {
     @JvmStatic
     fun main(args: Array<String>) = runBlocking {
@@ -128,9 +130,7 @@ object ServerTrace {
             setBody(PlanRouteRequest(route, GeoPoint(47.5800, -122.3300), stops))
         }.body()
         say(
-            "### 1. Plan\n\n```\n${Json {
-                prettyPrint = true
-            }.encodeToString(PlanRouteResponse.serializer(), plan)}\n```",
+            "### 1. Plan\n\n```\n${prettyJson.encodeToString(PlanRouteResponse.serializer(), plan)}\n```",
         )
         val order = plan.order.mapIndexed { i, id -> "${i + 1}. $id ${stops.first { it.id == id }.address}" }
         say("\n" + order.joinToString("\n"))

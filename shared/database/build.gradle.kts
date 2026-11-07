@@ -26,6 +26,7 @@ sqldelight {
         create("MilkrunDatabase") {
             packageName.set("com.milkrun.database")
             schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
+            migrationOutputDirectory.set(file("build/sqldelight/migrations"))
             verifyMigrations.set(true)
         }
     }

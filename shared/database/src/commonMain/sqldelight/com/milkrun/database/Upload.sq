@@ -1,0 +1,33 @@
+-- Proof-of-delivery photos waiting to reach the server. A row survives app restarts; the file it
+-- points at stays on the phone until the upload completes and is verified.
+CREATE TABLE upload_job (
+    upload_id    TEXT    NOT NULL PRIMARY KEY,
+    stop_id      TEXT    NOT NULL,
+    path         TEXT    NOT NULL,
+    size         INTEGER NOT NULL,
+    sha256       TEXT    NOT NULL,
+    content_type TEXT    NOT NULL,
+    -- 'pending' until the server verified the bytes, then 'done'
+    state        TEXT    NOT NULL DEFAULT 'pending',
+    parts_sent   INTEGER NOT NULL DEFAULT 0,
+    attempts     INTEGER NOT NULL DEFAULT 0,
+    created_at   INTEGER NOT NULL
+);
+
+insertJob:
+INSERT INTO upload_job(upload_id, stop_id, path, size, sha256, content_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+pendingJobs:
+SELECT * FROM upload_job WHERE state = 'pending' ORDER BY created_at;
+
+allJobs:
+SELECT * FROM upload_job ORDER BY created_at;
+
+markProgress:
+UPDATE upload_job SET parts_sent = ?, attempts = attempts + 1 WHERE upload_id = ?;
+
+markDone:
+UPDATE upload_job SET state = 'done', parts_sent = ? WHERE upload_id = ?;
+
+jobForStop:
+SELECT * FROM upload_job WHERE stop_id = ? ORDER BY created_at DESC LIMIT 1;

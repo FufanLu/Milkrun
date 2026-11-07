@@ -125,7 +125,27 @@ private fun App(session: MilkrunSession, sun: Boolean, onToggleSun: () -> Unit) 
                 model.refusal(r, d.card.number)?.let { scope.launch { snackbar.showSnackbar(it) } }
                 if (done && r is RecordResult.Recorded) nav.popBackStack()
             }
+            val ctx = LocalContext.current
+            val photoFile =
+                remember(id) {
+                    java.io.File(ctx.filesDir, "proof").apply {
+                        mkdirs()
+                    }.let { java.io.File(it, "${id.value}-${System.currentTimeMillis()}.jpg") }
+                }
+            val takePhoto = androidx.activity.compose.rememberLauncherForActivityResult(
+                androidx.activity.result.contract.ActivityResultContracts.TakePicture(),
+            ) { saved ->
+                if (saved && photoFile.length() > 0) scope.launch { report(model.attachPhoto(id, photoFile.path)) }
+            }
             StopScreen(
+                onTakePhoto = {
+                    val uri = androidx.core.content.FileProvider.getUriForFile(
+                        ctx,
+                        "${ctx.packageName}.proof",
+                        photoFile,
+                    )
+                    takePhoto.launch(uri)
+                },
                 state = d,
                 snackbar = snackbar,
                 onBack = { nav.popBackStack() },

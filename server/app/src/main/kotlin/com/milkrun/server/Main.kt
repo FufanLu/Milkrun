@@ -18,6 +18,7 @@ import javax.sql.DataSource
  * | `DATABASE_USER` / `DATABASE_PASSWORD` | `milkrun` / `milkrun` |
  * | `DATABASE_POOL_SIZE` | 16 |
  * | `JWT_SECRET` | required, at least 32 characters |
+ * | `BLOB_DIR` | `/var/lib/milkrun/blobs` (proof photos; S3 in production) |
  * | `MILKRUN_DEV_MODE` | `false`; `true` enables `POST /v1/dev/session` (demo route + tokens) |
  */
 public fun main() {
@@ -35,6 +36,11 @@ public fun main() {
         jwt = JwtConfig(env["JWT_SECRET"] ?: error("JWT_SECRET is required")),
         readiness = { runCatching { dataSource.connection.use { it.isValid(1) } }.getOrDefault(false) },
         devMode = env["MILKRUN_DEV_MODE"] == "true",
+        blobs = FileBlobStore(
+            java.nio.file.Path.of(env["BLOB_DIR"] ?: "/var/lib/milkrun/blobs").also {
+                java.nio.file.Files.createDirectories(it)
+            },
+        ),
     )
     val port = env["PORT"]?.toInt() ?: 8080
     log.info("milkrun server starting on :{}", port)

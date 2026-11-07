@@ -1,6 +1,7 @@
 plugins {
     id("milkrun.jvm.service")
     alias(libs.plugins.ktor)
+    alias(libs.plugins.kotlin.serialization)
     application
 }
 
@@ -34,6 +35,7 @@ dependencies {
     testImplementation(testFixtures(projects.server.core))
     testImplementation(projects.tools.simulation)
     testImplementation(projects.shared.network)
+    testImplementation(projects.shared.proof)
     testImplementation(projects.shared.sync)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.content.negotiation)

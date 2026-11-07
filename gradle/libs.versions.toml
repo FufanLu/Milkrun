@@ -15,6 +15,7 @@ koin = "4.2.2"
 skie = "0.10.16"
 kotest = "6.2.6"
 turbine = "1.2.1"
+okio = "3.18.2"
 
 exposed = "1.6.1"
 flyway = "13.12.1"
@@ -89,6 +90,8 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 
 kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }

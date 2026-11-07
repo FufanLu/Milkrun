@@ -22,6 +22,9 @@ public enum class RejectReason {
 
     @SerialName("note_too_long")
     NOTE_TOO_LONG,
+
+    @SerialName("stop_not_finished")
+    STOP_NOT_FINISHED,
 }
 
 public sealed interface Decision {
@@ -57,6 +60,7 @@ public object StopRules {
             is Mutation.Deliver -> deliver(stop, mutation)
             is Mutation.Attempt -> attempt(stop, mutation)
             is Mutation.SetNote -> setNote(stop, mutation, hlc)
+            is Mutation.AttachProof -> attachProof(stop, mutation)
         }
     }
 
@@ -151,6 +155,14 @@ public object StopRules {
                 stop.copy(status = StopStatus.ATTEMPTED, attemptReason = m.reason, completedAtMillis = m.atMillis),
             )
         }
+    }
+
+    /** A photo proves a delivery or an attempt; the latest one wins (a retake replaces it). */
+    private fun attachProof(stop: Stop, m: Mutation.AttachProof): Decision = when (stop.status) {
+        StopStatus.DELIVERED, StopStatus.ATTEMPTED ->
+            Decision.Accepted(stop.copy(proof = ProofRef(m.uploadId, m.sha256)))
+
+        else -> Decision.Rejected(RejectReason.STOP_NOT_FINISHED)
     }
 
     private fun setNote(stop: Stop, m: Mutation.SetNote, hlc: Hlc): Decision = when {

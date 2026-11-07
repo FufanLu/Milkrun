@@ -39,6 +39,14 @@ public sealed interface Mutation {
     @Serializable
     @SerialName("set_note")
     public data class SetNote(override val stopId: StopId, val text: String) : Mutation
+
+    /**
+     * A proof-of-delivery photo for a finished stop. The bytes travel separately (resumable
+     * upload, `uploadId`); this records which upload belongs to the stop and its SHA-256.
+     */
+    @Serializable
+    @SerialName("attach_proof")
+    public data class AttachProof(override val stopId: StopId, val uploadId: String, val sha256: String) : Mutation
 }
 
 /** Something a dispatcher did. Only the server issues these. */
@@ -63,4 +71,5 @@ public val Mutation.wireName: String
         is Mutation.Deliver -> "deliver"
         is Mutation.Attempt -> "attempt"
         is Mutation.SetNote -> "set_note"
+        is Mutation.AttachProof -> "attach_proof"
     }

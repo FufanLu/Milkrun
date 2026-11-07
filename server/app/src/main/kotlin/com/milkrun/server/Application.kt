@@ -9,6 +9,7 @@ import com.milkrun.model.wireName
 import com.milkrun.protocol.ApiError
 import com.milkrun.protocol.CommandRequest
 import com.milkrun.protocol.CommandResponse
+import com.milkrun.protocol.CreateUpload
 import com.milkrun.protocol.DevSession
 import com.milkrun.protocol.DispatchApi
 import com.milkrun.protocol.ErrorCode
@@ -44,9 +45,11 @@ import io.ktor.server.request.header
 import io.ktor.server.request.path
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondBytes
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.micrometer.core.instrument.MeterRegistry
@@ -66,6 +69,7 @@ public class ServerDeps(
     public val wallClock: () -> Long = System::currentTimeMillis,
     /** Enables `POST /v1/dev/session`. Never on in production (MILKRUN_DEV_MODE). */
     public val devMode: Boolean = false,
+    public val blobs: BlobStore = FileBlobStore(java.nio.file.Files.createTempDirectory("milkrun-blobs")),
 ) {
     public val sync: SyncService = SyncService(store, wallClock, MetricsObserver(registry))
 }
@@ -118,6 +122,14 @@ public fun Application.milkrun(deps: ServerDeps) {
         exception<BadRequestException> { call, e -> call.badRequest(e.rootMessage()) }
         exception<SerializationException> { call, e -> call.badRequest(e.message) }
         exception<IllegalArgumentException> { call, e -> call.badRequest(e.message) }
+        exception<UploadException> { call, e ->
+            val status = when (e.code) {
+                "unknown_upload" -> HttpStatusCode.NotFound
+                "conflict", "incomplete", "hash_mismatch" -> HttpStatusCode.Conflict
+                else -> HttpStatusCode.BadRequest
+            }
+            call.respond(status, ApiError(ErrorCode.BAD_REQUEST, "${e.code}: ${e.message}"))
+        }
         exception<SQLTransientException> { call, _ ->
             call.response.headers.append(HttpHeaders.RetryAfter, "2")
             call.respond(HttpStatusCode.ServiceUnavailable, ApiError(ErrorCode.UNAVAILABLE, "database unavailable"))
@@ -189,6 +201,31 @@ public fun Application.milkrun(deps: ServerDeps) {
                 }
             }
 
+            route("/v1/routes/{routeId}/uploads") {
+                post {
+                    val route = call.driverRoute()
+                    call.respond(deps.blobs.create(route, call.receive<CreateUpload>()))
+                }
+                get("/{uploadId}") {
+                    val route = call.driverRoute()
+                    val st = deps.blobs.status(route, call.parameters["uploadId"]!!)
+                        ?: throw UploadException("unknown_upload", "no such upload")
+                    call.respond(st)
+                }
+                put("/{uploadId}/parts/{part}") {
+                    val route = call.driverRoute()
+                    val part =
+                        call.parameters["part"]!!.toIntOrNull()
+                            ?: throw UploadException("bad_part", "part must be a number")
+                    deps.blobs.putPart(route, call.parameters["uploadId"]!!, part, call.receive<ByteArray>())
+                    call.respond(HttpStatusCode.NoContent)
+                }
+                post("/{uploadId}/complete") {
+                    val route = call.driverRoute()
+                    call.respond(deps.blobs.complete(route, call.parameters["uploadId"]!!))
+                }
+            }
+
             route(DispatchApi.ROUTES_PATH) {
                 post {
                     call.requireDispatcher()
@@ -200,6 +237,12 @@ public fun Application.milkrun(deps: ServerDeps) {
                     val route = RouteId(call.parameters["routeId"]!!)
                     val pull = deps.sync.pull(route, ClientId("dispatcher"), 0)
                     call.respond(RouteSnapshot(route, pull.cursor, pull.changes))
+                }
+                get("/{routeId}/proofs/{uploadId}") {
+                    call.requireDispatcher()
+                    val bytes = deps.blobs.read(RouteId(call.parameters["routeId"]!!), call.parameters["uploadId"]!!)
+                        ?: throw UploadException("unknown_upload", "no completed upload")
+                    call.respondBytes(bytes, io.ktor.http.ContentType.Image.JPEG)
                 }
                 post("/{routeId}/commands") {
                     call.requireDispatcher()

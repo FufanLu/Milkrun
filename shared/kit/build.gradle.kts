@@ -19,6 +19,7 @@ kotlin {
             export(projects.shared.protocol)
             export(projects.shared.sync)
             export(projects.shared.presentation)
+            export(projects.shared.proof)
             linkerOpts("-lsqlite3")
             xcf.add(this)
         }
@@ -32,6 +33,7 @@ kotlin {
             api(projects.shared.protocol)
             api(projects.shared.sync)
             api(projects.shared.presentation)
+            api(projects.shared.proof)
             implementation(libs.ktor.client.darwin)
         }
     }
