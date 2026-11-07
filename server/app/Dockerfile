@@ -1,8 +1,12 @@
 # Runtime image for the sync service. The fat jar is built by Gradle first:
 #   ./gradlew :server:app:buildFatJar && docker build -t milkrun-server server/app
 FROM amazoncorretto:21-alpine
-RUN addgroup -S milkrun && adduser -S milkrun -G milkrun
+RUN addgroup -S milkrun && adduser -S milkrun -G milkrun \
+    && mkdir -p /data/blobs && chown -R milkrun:milkrun /data
 WORKDIR /app
+# Proof photos (S3 in production; a volume here).
+ENV BLOB_DIR=/data/blobs
+VOLUME /data
 COPY build/libs/milkrun-server.jar /app/milkrun-server.jar
 USER milkrun
 EXPOSE 8080

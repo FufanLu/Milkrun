@@ -1,4 +1,5 @@
 @preconcurrency import MilkrunKit
+import PhotosUI
 import SwiftUI
 
 /// Working one stop: parcels on label stock, reversible actions on top, and the irreversible
@@ -13,6 +14,7 @@ struct StopView: View {
     @State private var reasonsOpen = false
     @State private var note = ""
     @State private var refusal: String?
+    @State private var pickedPhoto: PhotosPickerItem?
 
     var body: some View {
         Group {
@@ -93,6 +95,9 @@ struct StopView: View {
                     .background(Rectangle().fill(c.label).shadow(color: .black.opacity(0.12), radius: 1, y: 1))
                     .overlay { if let edge = c.labelEdge { Rectangle().stroke(edge, lineWidth: 2) } }
                     .padding(.horizontal, Space.gutter)
+                    if d.canAttachPhoto || !(d.photo is PhotoStateNone) {
+                        proof(d)
+                    }
                     TextField("Note for this address", text: $note, prompt: Text("Gate code, where you left it").foregroundStyle(c.labelInk2))
                         .font(.body)
                         .foregroundStyle(c.labelInk)
@@ -113,6 +118,38 @@ struct StopView: View {
         .confirmationDialog("Why couldn't you deliver?", isPresented: $reasonsOpen, titleVisibility: .visible) {
             ForEach(AttemptReason.allCases, id: \.self) { r in
                 Button(Copy.shared.attemptOption(r: r)) { attempt(d, r) }
+            }
+        }
+    }
+
+    /// Proof of delivery: one photo per finished stop, uploaded on its own resumable channel.
+    private func proof(_ d: StopDetailState) -> some View {
+        VStack(alignment: .leading, spacing: Space.s) {
+            Text("Proof").font(.subheadline.weight(.semibold)).foregroundStyle(c.ink2)
+            HStack {
+                Text(d.photo.label).font(.body).foregroundStyle(c.ink)
+                Spacer()
+                if d.photo is PhotoStateUploading { TapeTab() }
+            }
+            PhotosPicker(selection: $pickedPhoto, matching: .images) {
+                Text(d.photo is PhotoStateNone ? "Add photo" : "Replace photo")
+            }
+            .buttonStyle(OutlineBlockButtonStyle())
+            .background(c.label)
+            .disabled(!d.canAttachPhoto)
+        }
+        .padding(.horizontal, Space.gutter)
+        .padding(.top, Space.xl)
+        .onChange(of: pickedPhoto) { _, item in
+            guard let item else { return }
+            Task { @MainActor in
+                guard let data = try? await item.loadTransferable(type: Data.self) else { return }
+                let dir = URL.documentsDirectory.appending(path: "proof", directoryHint: .isDirectory)
+                try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+                let file = dir.appending(path: "\(d.card.key)-\(Int(Date().timeIntervalSince1970)).jpg")
+                guard (try? data.write(to: file)) != nil else { return }
+                record { try await screen.attachPhoto(stop: d.card.id, path: file.path) }
+                pickedPhoto = nil
             }
         }
     }

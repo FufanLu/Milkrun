@@ -36,7 +36,7 @@ jobs:
           docker run -d --name server --network host -e DATABASE_URL=jdbc:postgresql://localhost:5432/milkrun \
             -e DATABASE_PASSWORD=milkrun -e JWT_SECRET=ci-secret-ci-secret-ci-secret-ci-secret -e PORT=8080 milkrun-server
           for i in $(seq 1 30); do curl -sf localhost:8080/readyz && break; sleep 1; done
-          curl -sf localhost:8080/readyz
+          curl -sf localhost:8080/readyz || { docker logs server; exit 1; }
           docker logs server | tail -5
 
   ios:
