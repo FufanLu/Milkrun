@@ -8,6 +8,7 @@ import com.milkrun.protocol.PullResponse
 import com.milkrun.protocol.PushRequest
 import com.milkrun.protocol.PushResponse
 import com.milkrun.protocol.SyncApi
+import com.milkrun.protocol.Traceparent
 import com.milkrun.sync.SeqGapException
 import com.milkrun.sync.SyncTransport
 import io.ktor.client.HttpClient
@@ -68,6 +69,8 @@ public class KtorSyncTransport(private val client: HttpClient, private val token
     private suspend fun HttpRequestBuilder.common() {
         bearerAuth(token())
         header(SyncApi.PROTOCOL_HEADER, SyncApi.PROTOCOL_VERSION)
+        // A fresh trace per request: the server logs under it and echoes it in `traceresponse`.
+        header(Traceparent.HEADER, Traceparent.random().encode())
     }
 
     private suspend inline fun <reified T> HttpResponse.decode(): T {

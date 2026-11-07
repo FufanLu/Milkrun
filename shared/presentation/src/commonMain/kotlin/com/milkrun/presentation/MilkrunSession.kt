@@ -32,11 +32,24 @@ public class MilkrunSession private constructor(
     public val engine: SyncEngine,
     public val screen: RouteScreenModel,
     private val loop: Job,
+    private val store: SessionStore,
 ) {
     public val routeId: RouteId get() = session.routeId
 
     public fun close() {
         loop.cancel()
+    }
+
+    /**
+     * End of shift: stop syncing, forget the credentials, and let the platform delete the route's
+     * database and photos ([wipe]). Refuses while anything is unsent (see RouteUiState.canEndShift).
+     */
+    public fun endShift(wipe: (routeId: String) -> Unit): Boolean {
+        if (!screen.state.value.canEndShift) return false
+        loop.cancel()
+        store.clear()
+        wipe(session.routeId.value)
+        return true
     }
 
     public companion object {
@@ -65,7 +78,7 @@ public class MilkrunSession private constructor(
                 launch { engine.run() }
                 launch { uploader.run() }
             }
-            return MilkrunSession(session, engine, RouteScreenModel(engine, scope, wallClock, uploader), loop)
+            return MilkrunSession(session, engine, RouteScreenModel(engine, scope, wallClock, uploader), loop, store)
         }
     }
 }

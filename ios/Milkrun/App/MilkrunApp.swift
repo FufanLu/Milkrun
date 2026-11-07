@@ -35,6 +35,7 @@ final class AppModel {
     private(set) var phase: Phase = .loading
     private(set) var route: RouteUiState?
     private(set) var session: MilkrunSession?
+    private let arrival = ArrivalWatcher()
     var sunMode: Bool = UserDefaults.standard.bool(forKey: "sun") {
         didSet { UserDefaults.standard.set(sunMode, forKey: "sun") }
     }
@@ -48,12 +49,13 @@ final class AppModel {
 
     func start() async {
         guard session == nil else { return }
-        if ProcessInfo.processInfo.arguments.contains("-resetSession") { Milkrun.shared.resetSession() }
+        if ProcessInfo.processInfo.arguments.contains("-resetSession") { KeychainSessionStore().clear() }
         do {
-            let s = try await Milkrun.shared.start(serverUrl: Self.serverURL)
+            let s = try await Milkrun.shared.start(serverUrl: Self.serverURL, store: KeychainSessionStore())
             session = s
             SyncTask.session = s
             phase = .ready
+            arrival.start(s.screen)
             for await state in s.screen.state {
                 route = state
             }
@@ -63,6 +65,21 @@ final class AppModel {
     }
 
     func refresh() { session?.screen.refresh() }
+
+    /// End of shift: wipe the route's database and proof photos, then start the next shift.
+    func endShift() async {
+        guard let s = session else { return }
+        let ended = s.endShift { route in
+            Milkrun.shared.deleteRouteDatabase(routeId: route)
+            try? FileManager.default.removeItem(at: URL.documentsDirectory.appending(path: "proof"))
+        }
+        guard ended else { return }
+        arrival.stop()
+        session = nil
+        route = nil
+        phase = .loading
+        await start()
+    }
 
     var screen: RouteScreenModel? { session?.screen }
 }
@@ -111,7 +128,7 @@ struct RootView: View {
             case .ready:
                 if let route = model.route, let screen = model.screen {
                     NavigationStack {
-                        RouteView(state: route, screen: screen, sunMode: $model.sunMode)
+                        RouteView(state: route, screen: screen, sunMode: $model.sunMode) { Task { await model.endShift() } }
                     }
                     .tint(colors.ink)
                 } else {

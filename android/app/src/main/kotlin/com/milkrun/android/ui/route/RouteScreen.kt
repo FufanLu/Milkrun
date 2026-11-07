@@ -75,6 +75,7 @@ fun RouteScreen(
     onRefresh: () -> Unit,
     refreshing: Boolean,
     modifier: Modifier = Modifier,
+    onEndShift: () -> Unit = {},
 ) {
     val c = LocalMilkrunColors.current
     Surface(color = c.ground, modifier = modifier.fillMaxSize()) {
@@ -100,7 +101,7 @@ fun RouteScreen(
                         NextStop(next, onOpen = { onOpenStop(next.id) }, onArrive = { onArrive(next.id) })
                     }
                 } else if (state.loaded) {
-                    item(key = "finished") { Finished(state) }
+                    item(key = "finished") { Finished(state, onEndShift) }
                 }
                 items(state.upcoming, key = { it.id.value }) { s ->
                     StopRow(s, onClick = { onOpenStop(s.id) }, modifier = Modifier.animateItem())
@@ -311,21 +312,27 @@ private fun StopRow(s: StopCard, onClick: () -> Unit, modifier: Modifier = Modif
 }
 
 @Composable
-private fun Finished(state: RouteUiState) {
+private fun Finished(state: RouteUiState, onEndShift: () -> Unit) {
     val c = LocalMilkrunColors.current
     Surface(color = c.label, shadowElevation = 2.dp, modifier = Modifier.padding(Space.gutter).fillMaxWidth()) {
-        Column(Modifier.padding(Space.l), verticalArrangement = Arrangement.spacedBy(Space.xs)) {
-            Text(
-                Copy.ROUTE_DONE_TITLE,
-                style = MaterialTheme.typography.titleLarge,
-                color = c.labelInk,
-                modifier = Modifier.semantics { heading() },
-            )
-            Text(
-                Copy.routeDoneBody(state.delivered, state.attempted),
-                style = MaterialTheme.typography.bodyLarge,
-                color = c.labelInk2,
-            )
+        Column {
+            Column(Modifier.padding(Space.l), verticalArrangement = Arrangement.spacedBy(Space.xs)) {
+                Text(
+                    Copy.ROUTE_DONE_TITLE,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = c.labelInk,
+                    modifier = Modifier.semantics { heading() },
+                )
+                Text(
+                    Copy.routeDoneBody(state.delivered, state.attempted),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = c.labelInk2,
+                )
+                if (!state.canEndShift) {
+                    Text(Copy.END_SHIFT_WAITING, style = MaterialTheme.typography.bodyMedium, color = c.labelInk2)
+                }
+            }
+            BlockButton("End shift", onClick = onEndShift, enabled = state.canEndShift)
         }
     }
 }

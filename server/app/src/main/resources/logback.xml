@@ -1,7 +1,7 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} %-5level [%X{request_id:-}] %logger{20} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%X{trace_id:-}] [%X{request_id:-}] %logger{20} - %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="com.zaxxer.hikari" level="WARN"/>

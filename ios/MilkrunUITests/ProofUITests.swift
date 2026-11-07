@@ -8,7 +8,7 @@ import XCTest
 final class ProofUITests: XCTestCase {
     func testPhotoReachesTheServer() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-resetSession"]
+        app.launchArguments = ["-resetSession", "-disableLocation"]
         app.launch()
         XCTAssertTrue(app.staticTexts["routeLabel"].waitForExistence(timeout: 30))
         app.buttons["Arrived"].firstMatch.tap()

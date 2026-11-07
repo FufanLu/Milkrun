@@ -217,6 +217,21 @@ class ApiTest {
         }
     }
 
+    @Test
+    fun theServerContinuesThePhonesTrace() = api { http ->
+        val route = newRoute()
+        http.createRoute(route)
+        val sent = com.milkrun.protocol.Traceparent.parse("00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01")!!
+        val r = http.get(SyncApi.pullPath(route) + "?client=c&cursor=0") {
+            bearerAuth(jwt.issue(Caller.Driver("drv-1", route)))
+            header(SyncApi.PROTOCOL_HEADER, 1)
+            header(com.milkrun.protocol.Traceparent.HEADER, sent.encode())
+        }
+        val back = com.milkrun.protocol.Traceparent.parse(r.headers[com.milkrun.protocol.Traceparent.RESPONSE_HEADER])!!
+        assertEquals(sent.traceId, back.traceId, "same trace")
+        kotlin.test.assertNotEquals(sent.spanId, back.spanId, "server span is a child")
+    }
+
     private companion object {
         val n = AtomicInteger()
     }

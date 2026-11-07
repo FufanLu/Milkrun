@@ -8,6 +8,7 @@ struct RouteView: View {
     let state: RouteUiState
     let screen: RouteScreenModel
     @Binding var sunMode: Bool
+    var onEndShift: () -> Void = {}
     @State private var path: [String] = []
 
     var body: some View {
@@ -113,17 +114,26 @@ struct RouteView: View {
     }
 
     private var finished: some View {
-        VStack(alignment: .leading, spacing: Space.xs) {
-            Text(Copy.shared.ROUTE_DONE_TITLE).font(.title2.weight(.semibold)).accessibilityAddTraits(.isHeader)
-            Text(Copy.shared.routeDoneBody(delivered: state.delivered, attempted: state.attempted)).font(.body)
-                .foregroundStyle(c.labelInk2)
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: Space.xs) {
+                Text(Copy.shared.ROUTE_DONE_TITLE).font(.title2.weight(.semibold)).accessibilityAddTraits(.isHeader)
+                Text(Copy.shared.routeDoneBody(delivered: state.delivered, attempted: state.attempted)).font(.body)
+                    .foregroundStyle(c.labelInk2)
+                if !state.canEndShift {
+                    Text(Copy.shared.END_SHIFT_WAITING).font(.subheadline).foregroundStyle(c.labelInk2)
+                }
+            }
+            .foregroundStyle(c.labelInk)
+            .padding(Space.l)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button("End shift", action: onEndShift)
+                .buttonStyle(BlockButtonStyle())
+                .disabled(!state.canEndShift)
         }
-        .foregroundStyle(c.labelInk)
-        .padding(Space.l)
-        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Rectangle().fill(c.label).shadow(color: .black.opacity(0.18), radius: 2, y: 1))
         .padding(Space.gutter)
     }
+
 }
 
 /// The one lifted label on the kraft: the stop the driver is working or driving to.

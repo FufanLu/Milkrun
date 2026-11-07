@@ -53,6 +53,8 @@ public object Copy {
     public const val DELIVERED_AFTER_CANCEL: String = "Delivered after cancel · dispatch notified"
     public const val ALL_SENT: String = "All sent"
     public const val ROUTE_DONE_TITLE: String = "Route done"
+    public const val END_SHIFT_WAITING: String =
+        "End shift unlocks once everything has reached the station. Stay in signal for a moment."
 
     public fun routeDoneBody(delivered: Int, attempted: Int): String =
         "$delivered delivered, $attempted not delivered. Head back to the station."

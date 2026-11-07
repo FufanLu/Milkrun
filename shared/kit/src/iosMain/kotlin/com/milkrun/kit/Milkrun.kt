@@ -23,12 +23,27 @@ import platform.Foundation.timeIntervalSince1970
 public object Milkrun {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    /** Forgets the saved shift so the next start asks for a new route (UI tests, end of shift). */
-    public fun resetSession(): Unit = DefaultsSessionStore().clear()
-
-    public suspend fun start(serverUrl: String): MilkrunSession {
+    /** [store] is the app's Keychain-backed store (Swift); the UserDefaults one is for tests only. */
+    public suspend fun start(serverUrl: String, store: SessionStore): MilkrunSession {
         installCrashLogging()
-        return startSession(serverUrl)
+        return startSession(serverUrl, store)
+    }
+
+    /** Deletes a finished route's database file (the platform half of MilkrunSession.endShift). */
+    public fun deleteRouteDatabase(routeId: String) {
+        platform.Foundation.NSFileManager.defaultManager.let { fm ->
+            val dir = (
+                fm.URLsForDirectory(
+                    platform.Foundation.NSApplicationSupportDirectory,
+                    platform.Foundation.NSUserDomainMask,
+                ).firstOrNull() as? platform.Foundation.NSURL
+                )
+            listOf("route-$routeId.db", "route-$routeId.db-wal", "route-$routeId.db-shm").forEach { name ->
+                dir?.URLByAppendingPathComponent("databases")?.URLByAppendingPathComponent(name)?.let {
+                    fm.removeItemAtURL(it, null)
+                }
+            }
+        }
     }
 
     /** Kotlin's uncaught exceptions go to stderr, which iOS drops: put them in the unified log first. */
@@ -41,17 +56,17 @@ public object Milkrun {
         if (previous != null) setUnhandledExceptionHook(previous)
     }
 
-    private suspend fun startSession(serverUrl: String): MilkrunSession = MilkrunSession.start(
+    private suspend fun startSession(serverUrl: String, store: SessionStore): MilkrunSession = MilkrunSession.start(
         http = HttpClient(Darwin) { milkrunDefaults(serverUrl) },
-        store = DefaultsSessionStore(),
+        store = store,
         database = { route -> IosDatabase.create("route-${route.value}.db") },
         scope = scope,
         wallClock = { (NSDate().timeIntervalSince1970 * 1000).toLong() },
     )
 }
 
-/** Shift credentials in UserDefaults. M6 moves the token to the Keychain. */
-private class DefaultsSessionStore : SessionStore {
+/** Plain UserDefaults; tests and previews only. The app passes a Keychain store. */
+public class DefaultsSessionStore : SessionStore {
     private val defaults = NSUserDefaults.standardUserDefaults
 
     override fun load(): DevSession? = defaults.stringForKey(KEY)?.let {
@@ -66,4 +81,13 @@ private class DefaultsSessionStore : SessionStore {
     private companion object {
         const val KEY = "milkrun.session"
     }
+}
+
+/** JSON helpers for Swift, so the Keychain store uses the exact wire format. */
+public object Wire {
+    public fun encodeSession(session: DevSession): String =
+        SyncApi.json.encodeToString(DevSession.serializer(), session)
+
+    public fun decodeSession(json: String): DevSession? =
+        runCatching { SyncApi.json.decodeFromString(DevSession.serializer(), json) }.getOrNull()
 }

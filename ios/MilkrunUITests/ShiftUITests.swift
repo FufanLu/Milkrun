@@ -11,7 +11,7 @@ final class ShiftUITests: XCTestCase {
 
     private func launch(_ args: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = args
+        app.launchArguments = args + ["-disableLocation"]
         app.launch()
         XCTAssertTrue(app.staticTexts["routeLabel"].waitForExistence(timeout: 30), "route never loaded")
         return app
@@ -164,7 +164,7 @@ final class ShiftUITests: XCTestCase {
         // Larger text: Dynamic Type XXXL, about 1.3x body.
         app.terminate()
         app = XCUIApplication()
-        app.launchArguments = ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryXXXL"]
+        app.launchArguments = ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryXXXL", "-disableLocation"]
         app.launch()
         XCTAssertTrue(app.staticTexts["routeLabel"].waitForExistence(timeout: 30))
         // At XXXL the stickers push the next stop below the fold, and LazyVStack only builds what is on screen.

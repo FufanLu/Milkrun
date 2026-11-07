@@ -11,6 +11,6 @@ command produced it.
 | 02 | [The same mutation on the server: push, dedup, state machine, pull](02-server-side.md) | done |
 | 03 | [Android: one stop, from a thumb on the glass to a row in SQLite](03-android-stop.md) | done |
 | 04 | [iOS: the same stop through MilkrunKit and SwiftUI](04-ios-same-stop.md) | done |
-| 05 | [Proof of delivery in resumable parts, and knowing when the van has arrived](05-proof-and-arrival.md) | done (location wiring pending) |
-| 06 | One trace from the phone to Postgres | planned (M6) |
-| 07 | 1,000 drivers on a bad network | planned (M7) |
+| 05 | [Proof of delivery in resumable parts, and knowing when the van has arrived](05-proof-and-arrival.md) | done |
+| 06 | [One trace id from the phone to the log line, and a shift that leaves nothing behind](06-trace-and-shift-security.md) | done |
+| 07 | [Load: hundreds of drivers against one server, and how it would run on AWS](07-load-and-deploy.md) | done |

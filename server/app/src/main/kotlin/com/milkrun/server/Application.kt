@@ -20,6 +20,7 @@ import com.milkrun.protocol.PlanRouteResponse
 import com.milkrun.protocol.PushRequest
 import com.milkrun.protocol.RouteSnapshot
 import com.milkrun.protocol.SyncApi
+import com.milkrun.protocol.Traceparent
 import com.milkrun.server.sync.SyncException
 import com.milkrun.server.sync.SyncObserver
 import com.milkrun.server.sync.SyncService
@@ -102,9 +103,11 @@ public fun Application.milkrun(deps: ServerDeps) {
         generate { UUID.randomUUID().toString() }
         replyToHeader(HttpHeaders.XRequestId)
     }
+    install(TraceContext)
     install(CallLogging) {
         level = Level.INFO
         callIdMdc("request_id")
+        mdc("trace_id") { it.attributes.getOrNull(TraceKey)?.traceId }
         filter { !it.request.path().startsWith("/metrics") && !it.request.path().startsWith("/healthz") }
     }
     install(MicrometerMetrics) { registry = deps.registry }
@@ -170,7 +173,11 @@ public fun Application.milkrun(deps: ServerDeps) {
             // Demo convenience: a fresh Seattle route and tokens for it, so an emulator or simulator
             // can start a shift with one request. Off unless MILKRUN_DEV_MODE=true.
             post("/v1/dev/session") {
-                val route = RouteId("R-DEMO-${System.currentTimeMillis().toString(36).uppercase()}")
+                val route = RouteId(
+                    // Millis alone collide when many drivers start at once (found by the load tool).
+                    "R-DEMO-${System.currentTimeMillis().toString(36).uppercase()}" +
+                        "-${java.util.UUID.randomUUID().toString().take(6).uppercase()}",
+                )
                 deps.planAndCreate(DemoRoute.request(route))
                 call.respond(
                     DevSession(
@@ -318,4 +325,19 @@ internal suspend fun ServerDeps.planAndCreate(req: PlanRouteRequest): PlanRouteR
     }
     sync.createRoute(req.routeId, stops)
     return PlanRouteResponse(req.routeId, stops.map { it.id }, plan.nearestNeighbourKm, plan.optimisedKm)
+}
+
+internal val TraceKey = io.ktor.util.AttributeKey<Traceparent>("milkrun.trace")
+
+/**
+ * Continues the caller's W3C trace (or starts one), exposes it to logging, and answers with
+ * `traceresponse` carrying the server's span, so the phone can log which server span served it.
+ */
+internal val TraceContext = io.ktor.server.application.createApplicationPlugin("TraceContext") {
+    onCall { call ->
+        val incoming = Traceparent.parse(call.request.headers[Traceparent.HEADER])
+        val server = incoming?.child() ?: Traceparent.random()
+        call.attributes.put(TraceKey, server)
+        call.response.headers.append(Traceparent.RESPONSE_HEADER, server.encode())
+    }
 }

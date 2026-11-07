@@ -5,6 +5,8 @@ plugins {
 
 dependencies {
     implementation(projects.shared.sync)
+    implementation(projects.shared.network)
+    implementation(libs.ktor.client.cio)
     implementation(projects.server.core)
     // The simulator drives everything on a virtual clock; the test scheduler is that clock.
     implementation(libs.kotlinx.coroutines.test)
@@ -32,4 +34,10 @@ tasks.register<JavaExec>("trace") {
             .get()
             .asFile.path,
     )
+}
+
+tasks.register<JavaExec>("load") {
+    description = "Virtual drivers against a running dev-mode server (see Load.kt)."
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("com.milkrun.sim.LoadKt")
 }

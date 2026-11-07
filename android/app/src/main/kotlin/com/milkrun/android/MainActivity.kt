@@ -88,6 +88,7 @@ private fun App(session: MilkrunSession, sun: Boolean, onToggleSun: () -> Unit) 
     val model = session.screen
     val scope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_START) { model.refresh() }
+    ArrivalWatcher(model)
 
     NavHost(nav, startDestination = "route") {
         composable("route") {
@@ -114,6 +115,12 @@ private fun App(session: MilkrunSession, sun: Boolean, onToggleSun: () -> Unit) 
                     }
                 },
                 refreshing = refreshing,
+                onEndShift = {
+                    scope.launch {
+                        val app = nav.context.applicationContext as MilkrunApp
+                        if (app.endShift()) (nav.context as? android.app.Activity)?.recreate()
+                    }
+                },
             )
         }
         composable("stop/{id}") { entry ->

@@ -11,7 +11,11 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: complete
     DEVELOPMENT_TEAM: ""
-    CODE_SIGNING_ALLOWED: "NO"
+    # Ad-hoc signed ("-"): no team needed, and the app gets its default Keychain access group,
+    # which the session store needs (unsigned builds get errSecMissingEntitlement, -34018).
+    CODE_SIGNING_ALLOWED: "YES"
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
     ENABLE_USER_SCRIPT_SANDBOXING: "NO"
 targets:
   Milkrun:
@@ -34,6 +38,7 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIBackgroundModes: [fetch, processing]
         BGTaskSchedulerPermittedIdentifiers: [com.milkrun.sync]
+        NSLocationWhenInUseUsageDescription: "Milkrun marks a stop Arrived when the van has stopped there, so you don't have to tap it."
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         MilkrunServerURL: $(MILKRUN_SERVER_URL)

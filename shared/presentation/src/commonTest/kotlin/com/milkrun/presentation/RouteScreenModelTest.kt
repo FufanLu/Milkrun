@@ -83,7 +83,7 @@ class RouteScreenModelTest {
 
         override suspend fun pull(route: RouteId, client: ClientId, cursor: Long): PullResponse {
             if (!online) error("no signal")
-            return PullResponse(cursor + 1, last, if (cursor == 0L) stops else emptyList(), Hlc(1, 0, "server"))
+            return PullResponse(cursor + 1, last, stops, Hlc(1, 0, "server"))
         }
     }
 
@@ -178,5 +178,37 @@ class RouteScreenModelTest {
         m.deliver(StopId("S-3"), HandoffMethod.FRONT_DOOR)
         settle()
         assertEquals(emptyList(), m.state.value.notices)
+    }
+
+    @Test
+    fun theShiftCanOnlyEndWhenEverythingIsDoneAndSent() = runTest {
+        val server = Server(listOf(stop(1)))
+        val (engine, m) = model(server)
+        assertTrue(!m.state.value.canEndShift, "a stop is still open")
+        server.online = false
+        m.deliver(StopId("S-1"), HandoffMethod.FRONT_DOOR)
+        settle()
+        assertTrue(m.state.value.finished)
+        assertTrue(!m.state.value.canEndShift, "the delivery has not reached the server")
+        server.online = true
+        server.stops = listOf(stop(1).copy(status = StopStatus.DELIVERED))
+        engine.syncOnce()
+        settle()
+        assertTrue(m.state.value.canEndShift)
+    }
+
+    @Test
+    fun dwellingAtTheNextStopMarksItArrived() = runTest {
+        val far = stop(2).copy(location = GeoPoint(47.61, -122.3)) // ~1.1 km north of stop 1
+        val (_, m) = model(Server(listOf(stop(1), far)))
+        val t = 1_000_000L
+        assertTrue(!m.onLocation(47.6, -122.3, 10.0, t), "one fix is not arrival")
+        assertTrue(!m.onLocation(47.6, -122.3, 120.0, t + 25_000), "a vague fix does not count")
+        assertTrue(m.onLocation(47.6001, -122.3, 10.0, t + 21_000), "20 s inside 40 m is arrival")
+        settle()
+        assertEquals(StopStatus.ARRIVED, m.state.value.next?.status)
+        assertEquals("01", m.state.value.next?.number)
+        // Still parked at stop 1: the detector now watches stop 2, a kilometre away.
+        assertTrue(!m.onLocation(47.6, -122.3, 10.0, t + 60_000))
     }
 }

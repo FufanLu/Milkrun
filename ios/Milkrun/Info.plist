@@ -31,6 +31,8 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Milkrun marks a stop Arrived when the van has stopped there, so you don't have to tap it.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BigShouldersStencilDisplay.ttf</string>

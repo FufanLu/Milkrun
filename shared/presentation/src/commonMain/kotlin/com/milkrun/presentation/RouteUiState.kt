@@ -22,6 +22,12 @@ public data class RouteUiState(
 ) {
     public val finished: Boolean get() = loaded && next == null
 
+    /**
+     * Ending the shift wipes the route from the phone, so it is only offered once the route is
+     * done and nothing is waiting to be sent: a wipe must never take an unsent delivery with it.
+     */
+    public val canEndShift: Boolean get() = finished && sync is SyncBanner.AllSent && notices.isEmpty()
+
     public companion object {
         public val LOADING: RouteUiState =
             RouteUiState("", false, 0, 0, 0, SyncBanner.AllSent(null), null, emptyList(), emptyList(), emptyList())

@@ -74,9 +74,9 @@ flowchart LR
 | M2 | 服务端：鉴权、push/pull、Postgres、调度、路线优化 | 完成 |
 | M3 | Android App | 完成 |
 | M4 | iOS App | 完成 |
-| M5 | 签收照片上传、定位、地理围栏 | 照片与到站检测完成；定位接入待做 |
-| M6 | 可观测性与安全 | 下一步 |
-| M7 | 压测与混沌测试 | |
+| M5 | 签收照片上传、定位、地理围栏 | 完成 |
+| M6 | 可观测性与安全：W3C trace context、Keystore/Keychain 会话、收班清除 | 完成（[第 06 章](docs/illustrated/06-trace-and-shift-security.md)） |
+| M7 | 压测、k8s 部署、AWS 对应 | 完成（[第 07 章](docs/illustrated/07-load-and-deploy.md)） |
 
 ## 构建
 

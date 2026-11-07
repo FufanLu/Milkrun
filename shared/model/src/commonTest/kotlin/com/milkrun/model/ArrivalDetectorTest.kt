@@ -75,4 +75,24 @@ class ArrivalDetectorTest {
         val m = ArrivalDetector.distanceMeters(door, offset(100.0, 0.0))
         assertTrue(m in 99.5..100.5, "$m")
     }
+
+    @Test
+    fun aParkedPhoneThatStopsReportingStillArrivesOnTheClock() {
+        val d = ArrivalDetector()
+        d.target(StopId("S-1"), GeoPoint(47.6, -122.3))
+        assertNull(d.onTick(1_000_000), "no fix yet: nothing to go on")
+        assertNull(d.onFix(Fix(GeoPoint(47.6, -122.3), 8.0, 1_000_000)))
+        assertNull(d.onTick(1_015_000), "15 s is not 20 s")
+        assertEquals(ArrivalDetector.Event.Arrived(StopId("S-1"), 1_020_000), d.onTick(1_020_000))
+        assertNull(d.onTick(1_030_000), "arrival is reported once")
+    }
+
+    @Test
+    fun aTickDoesNotArriveAfterTheLastFixWasOutside() {
+        val d = ArrivalDetector()
+        d.target(StopId("S-1"), GeoPoint(47.6, -122.3))
+        d.onFix(Fix(GeoPoint(47.6, -122.3), 8.0, 0))
+        d.onFix(Fix(GeoPoint(47.61, -122.3), 8.0, 5_000)) // drove on
+        assertNull(d.onTick(60_000))
+    }
 }

@@ -1,0 +1,94 @@
+# Milkrun sync service on Kubernetes (EKS in production). Stateless: every replica serves every
+# route, because per-route ordering is enforced by PostgreSQL row locks, not by process affinity.
+# Proof photos go to S3 in production (BlobStore adapter); BLOB_DIR here is a scratch volume.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: milkrun-server
+  labels: { app: milkrun-server }
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }   # server-first deploys (ADR 0005) never dip capacity
+  selector:
+    matchLabels: { app: milkrun-server }
+  template:
+    metadata:
+      labels: { app: milkrun-server }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: /metrics
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: { type: RuntimeDefault }
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: server
+          image: ghcr.io/fufanlu/milkrun-server:latest
+          ports: [{ containerPort: 8080, name: http }]
+          env:
+            - { name: PORT, value: "8080" }
+            - { name: DATABASE_POOL_SIZE, value: "16" }
+            - { name: BLOB_DIR, value: /data/blobs }
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: milkrun-db, key: url } }
+            - name: DATABASE_USER
+              valueFrom: { secretKeyRef: { name: milkrun-db, key: user } }
+            - name: DATABASE_PASSWORD
+              valueFrom: { secretKeyRef: { name: milkrun-db, key: password } }
+            - name: JWT_SECRET
+              valueFrom: { secretKeyRef: { name: milkrun-jwt, key: secret } }
+          readinessProbe:      # /readyz checks the database: no traffic until Postgres answers
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:       # /healthz is process-only: a database outage must not restart pods
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 500m, memory: 512Mi }
+            limits: { memory: 768Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          volumeMounts:
+            - { name: blobs, mountPath: /data }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - { name: blobs, emptyDir: {} }
+        - { name: tmp, emptyDir: {} }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: milkrun-server
+spec:
+  selector: { app: milkrun-server }
+  ports: [{ name: http, port: 80, targetPort: http }]
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: milkrun-server
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: milkrun-server }
+  minReplicas: 3
+  maxReplicas: 20      # morning load-out: every van syncs its route within ~30 minutes
+  metrics:
+    - type: Resource
+      resource: { name: cpu, target: { type: Utilization, averageUtilization: 65 } }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: milkrun-server
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels: { app: milkrun-server }

@@ -81,9 +81,9 @@ flowchart LR
 | M2 | Server: auth, push/pull, Postgres, dispatch, route optimisation | done |
 | M3 | Android app | done |
 | M4 | iOS app | done |
-| M5 | Proof-of-delivery photo upload, location, geofencing | photo + arrival detector done; location wiring pending |
-| M6 | Observability and security | next |
-| M7 | Load and chaos testing | |
+| M5 | Proof-of-delivery photo upload, location, geofencing | done |
+| M6 | Observability and security: W3C trace context, Keystore/Keychain session, end-of-shift wipe | done ([ch. 06](docs/illustrated/06-trace-and-shift-security.md)) |
+| M7 | Load test, k8s deployment, AWS mapping | done ([ch. 07](docs/illustrated/07-load-and-deploy.md)) |
 
 ## Build
 

@@ -91,7 +91,54 @@ each pinned by a test:
 | driving past at 15 m/s is not arrival | the street passes 20 m from the door, but the van never dwells | `drivingPastDoesNotCountAsArrival` |
 
 It is pure, deterministic Kotlin, so the same detector runs on both phones and is tested on JVM,
-Android and iOS. **Not built yet:** feeding it from the platform location services (Fused Location
-Provider and Core Location, with background location permission) and turning `Arrived` into the
-driver's *Arrived* tap. That needs a location permission flow and a battery budget worth its own
-milestone, so this chapter claims only the detector.
+Android and iOS.
+
+### Wired to the phone's location
+
+```
+Android  LocationManager (fused on API 31+, GPS before), every 5 s ┐
+iOS      CLLocationUpdate.liveUpdates(.automotiveNavigation)       ├─▶ RouteScreenModel.onLocation(fix)
+                                                                    │        target = next PLANNED stop
+both     5 s clock while location is on ───────────────────────────┴─▶ RouteScreenModel.onLocationTick(now)
+                                                                             │ Arrived
+                                                                             ▼
+                                                     engine.record(Arrive(stop, at = decision time))
+                                                     the same mutation as the driver's tap, so it goes
+                                                     through StopRules, the outbox and the push as usual
+```
+
+Both apps ask only for **while-in-use** permission. The route is on screen while the driver
+drives, so "always" location is not worth asking for. If the driver says no, the Arrived button
+still works as before.
+
+### What the first end-to-end run caught
+
+`ArrivalUITests` launches the iOS app with the simulator at the Space Needle, taps *Allow While
+Using App*, and then moves the device to stop 01 (47.5917, −122.3343). The first run failed with
+"never arrived". Logging every update showed why:
+
+```
+04:37:11.234 milkrun loc Optional(47.6205) stationary=0     ← at the Space Needle
+04:37:23.030 milkrun loc Optional(47.5917) stationary=0     ← moved to stop 01 … and then nothing
+```
+
+When a device stops moving, Core Location stops sending updates, and a fused provider does the
+same. Parking looks exactly like this. The detector only decided on the next fix, so the 20 s
+dwell never completed. The unit tests had not caught it, because the synthetic tracks sent a fix
+every second. The fix is `ArrivalDetector.onTick(now)`. After a good fix inside the radius,
+silence counts as staying put, and any movement brings a new fix that can reset the dwell. Both
+apps call it every 5 s. Two tests pin it: `aParkedPhoneThatStopsReportingStillArrivesOnTheClock`
+and `aTickDoesNotArriveAfterTheLastFixWasOutside`.
+
+Second run: **arrived 22 s after reaching the stop** (20 s dwell, plus up to one 5 s tick), with
+no tap:
+
+| at the Space Needle | parked at stop 01, 22 s later |
+|---|---|
+| <img src="img/05/ios-arrival-away.png" width="220" alt="Stop 01 planned, Arrived button"> | <img src="img/05/ios-arrival-arrived.png" width="220" alt="Stop 01 arrived, Scan and deliver"> |
+
+The server received it as an ordinary push:
+
+```
+04:41:15.631 INFO [4a50686a921f3e048ce7fa80c34b8b4b] [2426b77d-…] 200 OK: POST - /v1/routes/R-DEMO-MW6E6A8Y-2FEA7C/push in 46ms
+```

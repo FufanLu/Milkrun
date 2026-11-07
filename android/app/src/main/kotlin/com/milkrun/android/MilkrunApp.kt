@@ -14,9 +14,6 @@ import com.milkrun.android.sync.SyncWorker
 import com.milkrun.database.AndroidDatabase
 import com.milkrun.network.milkrunDefaults
 import com.milkrun.presentation.MilkrunSession
-import com.milkrun.presentation.SessionStore
-import com.milkrun.protocol.DevSession
-import com.milkrun.protocol.SyncApi
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.CoroutineScope
@@ -36,17 +33,33 @@ class MilkrunApp : Application() {
 
     private val http by lazy { HttpClient(OkHttp) { milkrunDefaults(BuildConfig.SERVER_URL) } }
 
-    /** Started once; awaited by whoever needs it first. */
-    val session: Deferred<MilkrunSession> by lazy {
-        appScope.async {
-            MilkrunSession.start(
-                http = http,
-                store = PrefsSessionStore(this@MilkrunApp),
-                database = { route -> AndroidDatabase.create(this@MilkrunApp, "route-${route.value}.db") },
-                scope = appScope,
-                wallClock = System::currentTimeMillis,
-            )
+    /** The current shift; replaced after [endShift]. Awaited by whoever needs it first. */
+    @Volatile
+    var session: Deferred<MilkrunSession> = startSession()
+        private set
+
+    private fun startSession(): Deferred<MilkrunSession> = appScope.async {
+        MilkrunSession.start(
+            http = http,
+            store = KeystoreSessionStore(this@MilkrunApp),
+            database = { route -> AndroidDatabase.create(this@MilkrunApp, "route-${route.value}.db") },
+            scope = appScope,
+            wallClock = System::currentTimeMillis,
+        )
+    }
+
+    /**
+     * End of shift: wipe this route's database and proof photos (customer addresses and doorstep
+     * pictures must not outlive the shift), then start the next session. False while anything
+     * is unsent.
+     */
+    suspend fun endShift(): Boolean {
+        val ended = session.await().endShift { route ->
+            deleteDatabase("route-$route.db")
+            java.io.File(filesDir, "proof").deleteRecursively()
         }
+        if (ended) session = startSession()
+        return ended
     }
 
     override fun onCreate() {
@@ -68,24 +81,6 @@ class MilkrunApp : Application() {
                 .build(),
         )
     }
-}
-
-/**
- * Shift credentials in private SharedPreferences. M6 moves the token into an Android Keystore
- * backed store; route data already never leaves the device (see data_extraction_rules.xml).
- */
-private class PrefsSessionStore(context: Context) : SessionStore {
-    private val prefs = context.getSharedPreferences("session", Context.MODE_PRIVATE)
-
-    override fun load(): DevSession? = prefs.getString("session", null)?.let {
-        runCatching { SyncApi.json.decodeFromString(DevSession.serializer(), it) }.getOrNull()
-    }
-
-    override fun save(session: DevSession) = prefs.edit {
-        putString("session", SyncApi.json.encodeToString(DevSession.serializer(), session))
-    }
-
-    override fun clear() = prefs.edit { remove("session") }
 }
 
 object Prefs {

@@ -70,6 +70,20 @@ public class ArrivalDetector(
         return null
     }
 
+    /**
+     * Time passing with no new fix. Location services go quiet when the device stops moving
+     * (Core Location's stationary pause, a fused provider with nothing new to report), which is
+     * exactly what parking looks like. So silence after a good fix inside the radius counts as
+     * staying there; any movement brings a fresh fix through [onFix], which can reset the dwell.
+     */
+    public fun onTick(nowMillis: Long): Event? {
+        val (stop, _) = target ?: return null
+        val since = insideSince ?: return null
+        if (arrived || nowMillis - since < dwellMillis) return null
+        arrived = true
+        return Event.Arrived(stop, nowMillis)
+    }
+
     public companion object {
         private const val EARTH_RADIUS_M = 6_371_008.8
 

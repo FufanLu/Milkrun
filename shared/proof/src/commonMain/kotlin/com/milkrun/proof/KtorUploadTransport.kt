@@ -5,6 +5,7 @@ import com.milkrun.network.SyncHttpException
 import com.milkrun.protocol.ApiError
 import com.milkrun.protocol.CreateUpload
 import com.milkrun.protocol.SyncApi
+import com.milkrun.protocol.Traceparent
 import com.milkrun.protocol.UploadApi
 import com.milkrun.protocol.UploadStatus
 import io.ktor.client.HttpClient
@@ -48,6 +49,7 @@ public class KtorUploadTransport(private val client: HttpClient, private val tok
     private suspend fun HttpRequestBuilder.common() {
         bearerAuth(token())
         header(SyncApi.PROTOCOL_HEADER, SyncApi.PROTOCOL_VERSION)
+        header(Traceparent.HEADER, Traceparent.random().encode())
     }
 
     private suspend fun HttpResponse.check() {

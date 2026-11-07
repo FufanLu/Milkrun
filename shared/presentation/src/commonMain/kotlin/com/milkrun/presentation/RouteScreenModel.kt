@@ -1,6 +1,9 @@
 package com.milkrun.presentation
 
+import com.milkrun.model.ArrivalDetector
 import com.milkrun.model.AttemptReason
+import com.milkrun.model.Fix
+import com.milkrun.model.GeoPoint
 import com.milkrun.model.HandoffMethod
 import com.milkrun.model.Mutation
 import com.milkrun.model.ParcelId
@@ -73,6 +76,34 @@ public class RouteScreenModel(
     }
 
     public suspend fun arrive(stop: StopId): RecordResult = engine.record(Mutation.Arrive(stop, now()))
+
+    private val arrival = ArrivalDetector()
+
+    /**
+     * Feeds one platform location fix (Fused Location on Android, Core Location on iOS). The
+     * detector watches the next planned stop; once the van has dwelt there it records the same
+     * `Arrive` the driver's tap would, stamped with the fix time. Returns true when it did.
+     *
+     * Call from one thread (the platforms deliver fixes on the main thread): the detector is not
+     * synchronised. A driver who already tapped Arrived is unaffected, since the stop is no longer
+     * planned and the detector moves on to the next one.
+     */
+    public suspend fun onLocation(lat: Double, lng: Double, accuracyMeters: Double, atMillis: Long): Boolean =
+        decide { it.onFix(Fix(GeoPoint(lat, lng), accuracyMeters, atMillis)) }
+
+    /**
+     * Call every few seconds while location is on. A parked phone stops reporting fixes, so the
+     * dwell has to complete on the clock, not on the next fix ([ArrivalDetector.onTick]).
+     */
+    public suspend fun onLocationTick(atMillis: Long): Boolean = decide { it.onTick(atMillis) }
+
+    private suspend fun decide(step: (ArrivalDetector) -> ArrivalDetector.Event?): Boolean {
+        val next = stops.value.map { it.stop }.filter { it.status == StopStatus.PLANNED }.minByOrNull { it.sequence }
+            ?: return false
+        arrival.target(next.id, next.location)
+        val event = step(arrival) as? ArrivalDetector.Event.Arrived ?: return false
+        return engine.record(Mutation.Arrive(event.stop, event.atMillis)) is RecordResult.Recorded
+    }
 
     /** Scanning by tap until the camera scanner lands; the mutation is the same either way. */
     public suspend fun scan(stop: StopId, parcel: ParcelId): RecordResult =
