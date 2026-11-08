@@ -184,6 +184,43 @@ on new captures but have not had a second review pass.
 <img src="img/04/11-done-offline.png" width="220" alt="Done list with cross and unsent rows">
 </p>
 
+## The test that hung: a lazy stack that never settled
+
+From M4 on, `ProofUITests` stalled at the same point: after an online delivery, back on the route,
+the first swipe. XCUITest waited 60 s for "app to idle", then timed out on every query:
+
+```
+t =  15.21s     Wait for com.milkrun.driver to idle
+t =  75.24s         App event loop idle notification not received, will attempt to continue.
+t = 135.28s     Find the Target Application 'com.milkrun.driver'
+t = 166.30s         Find the Target Application 'com.milkrun.driver' (retry 1)
+```
+
+Two measurements narrowed it down. A debug-only `HangWatchdog` pings the main queue every
+second and logs any wait over a second. It never fired, so the main thread was not blocked. That
+silence means something because the watchdog is checked: `-watchdogSelfTest` blocks the main
+thread for 2.5 s, and it logs `milkrun watchdog: main thread blocked 2.2 s`.
+`ps`, sampled every 5 s during the stall, showed the app at **98–100 % of one core** for the
+whole time (an earlier note in the test said 0 %, which was wrong). A main thread that answers
+every ping while a core stays full is a run loop that never gets idle: SwiftUI was redoing the
+layout on every pass.
+
+The route was a `LazyVStack` in a `ScrollView`. After the delivery, a row moves from *upcoming*
+to *done*, loses its tape tab and its 72 pt trailing inset, and gets a new identity
+(`done-<id>`). With the scroll that follows, the lazy stack's estimated row heights and the
+measured ones kept correcting each other. A route has about 12 stops, so laziness saves
+nothing. The route is now a plain `VStack`:
+
+| route container | app CPU after the swipe | ProofUITests |
+|---|---|---|
+| `LazyVStack` | 98–100 % for 3+ minutes (3 runs) | timed out at 225 s |
+| `VStack` | 66 % → 10 % → 2.5 % within 15 s | passed in 25 s, photo uploaded |
+
+With the stall gone, two problems later in the test showed up, both from the iOS 26 photo
+picker. The first `image` in the picker is a 17 pt icon, so the test now selects cells labelled
+`Photo, …`. The picker also runs in another process and reports its cells as not hittable, so
+the test taps them by coordinate.
+
 ## Reproduce
 
 ```bash

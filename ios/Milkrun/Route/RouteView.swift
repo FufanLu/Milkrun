@@ -13,7 +13,7 @@ struct RouteView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 header
                 syncLine
                 ForEach(state.notices, id: \.seq) { notice in

@@ -9,6 +9,9 @@ struct MilkrunApp: App {
 
     init() {
         SyncTask.register()
+        #if DEBUG
+        HangWatchdog.start()
+        #endif
     }
 
     var body: some Scene {
